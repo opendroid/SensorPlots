@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  SPTAccelerometerVC.h
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/2/16.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface SPTAccelerometerVC : UIViewController
 
 @end
-
