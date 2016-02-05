@@ -63,6 +63,12 @@
     
     // Setup graph area
     [self setupAccelerometerGraph];
+    
+    // Listen to app going to background.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(appEnteredBackgroundMode:)
+                                                 name: UIApplicationDidEnterBackgroundNotification
+                                               object: nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -140,7 +146,8 @@
     self.trashUIB.enabled = YES;
     self.setupUIB.enabled = YES;
     self.updatesAreInProgress = NO;
-    
+    // We may reach here if app was sent to background.
+    self.startStopSensorUIB.image = [UIImage imageNamed:@"go25x25"];
     [self.dataArray removeAllObjects];
 }
 
@@ -236,6 +243,11 @@
                 return @0;
             }
     }
+}
+
+#pragma mark - Handle app background event
+- (void) appEnteredBackgroundMode: (UIApplication *)application {
+    [self.motionManager stopAccelerometerUpdates];
 }
 
 @end
