@@ -10,7 +10,7 @@
 
 @protocol SPTAccelerometerVCProtocol <NSObject>
 @required
--(void)receiveAcceleratorRefreshRateHz:(NSNumber *)value;
+-(void)receiveAccelerometerRefreshRateHz:(NSNumber *)value;
 
 @end
 

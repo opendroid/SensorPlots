@@ -19,13 +19,228 @@
                     <view key="view" contentMode="scaleToFill" id="FiM-Fl-zCe">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y4e-sG-H8g">
+                                <rect key="frame" x="20" y="522.5" width="560" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.18823529410000001" green="0.2666666667" blue="0.61960784310000006" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zgF-aP-ekf" customClass="CPTGraphHostingView">
+                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="0.91800219032832775" green="0.93829476835204728" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="Y4e-sG-H8g" firstAttribute="leading" secondItem="FiM-Fl-zCe" secondAttribute="leading" constant="20" symbolic="YES" id="6eZ-ag-UHn"/>
+                            <constraint firstItem="zgF-aP-ekf" firstAttribute="top" secondItem="hv3-2o-rz5" secondAttribute="bottom" id="VJe-FY-QQ1"/>
+                            <constraint firstItem="tnt-3k-8Dx" firstAttribute="top" secondItem="Y4e-sG-H8g" secondAttribute="bottom" constant="8" symbolic="YES" id="Vbb-ds-qJu"/>
+                            <constraint firstItem="zgF-aP-ekf" firstAttribute="leading" secondItem="FiM-Fl-zCe" secondAttribute="leadingMargin" constant="-20" id="XTx-lg-zYW"/>
+                            <constraint firstItem="tnt-3k-8Dx" firstAttribute="top" secondItem="zgF-aP-ekf" secondAttribute="bottom" id="Xc1-bs-Glv"/>
+                            <constraint firstAttribute="trailing" secondItem="Y4e-sG-H8g" secondAttribute="trailing" constant="20" symbolic="YES" id="w7D-hs-iwe"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="zgF-aP-ekf" secondAttribute="trailing" constant="-20" id="xrH-OS-hZS"/>
+                        </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Gyro" image="gyroscope25x25" id="Xju-sk-mGo"/>
+                    <navigationItem key="navigationItem" title="Gyro" id="AaZ-hQ-4Vq">
+                        <barButtonItem key="backBarButtonItem" title="Gyro" id="qWy-Rl-JF9"/>
+                        <leftBarButtonItems>
+                            <barButtonItem systemItem="compose" id="AB3-hW-SVj">
+                                <connections>
+                                    <action selector="emailGyroDataHandler:" destination="SKp-Hp-m6c" id="sUY-X4-zem"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="trash" id="49e-jt-qiW">
+                                <connections>
+                                    <action selector="trashGyroDataHandler:" destination="SKp-Hp-m6c" id="AEZ-tJ-erb"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
+                        <rightBarButtonItems>
+                            <barButtonItem image="timeline25x25" id="xZ1-uL-gCq">
+                                <connections>
+                                    <segue destination="QqD-FO-TWv" kind="show" identifier="gyroBtnToSetupSegue" id="Lxg-Vn-dmg"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="go25x25" id="RZR-An-WF8">
+                                <connections>
+                                    <action selector="startStopCapturingGyroHandler:" destination="SKp-Hp-m6c" id="e3F-br-M1G"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="composeUIB" destination="AB3-hW-SVj" id="f0x-f8-k3a"/>
+                        <outlet property="displayBoardUIL" destination="Y4e-sG-H8g" id="QRY-Dt-uqf"/>
+                        <outlet property="plotAreaGHV" destination="zgF-aP-ekf" id="kCG-pU-2ul"/>
+                        <outlet property="setupUIB" destination="xZ1-uL-gCq" id="gEc-so-vjA"/>
+                        <outlet property="startStopSensorUIB" destination="RZR-An-WF8" id="YsG-Cd-6u2"/>
+                        <outlet property="trashUIB" destination="49e-jt-qiW" id="9yc-gg-Qax"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="G9r-Ur-dtk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="812" y="-943"/>
+            <point key="canvasLocation" x="1491" y="-943"/>
+        </scene>
+        <!--Magnetometer-->
+        <scene sceneID="dKl-pf-9iC">
+            <objects>
+                <viewController id="qQ6-dk-KEN" customClass="SPTMagnetoVC" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="aeA-Hk-UEw"/>
+                        <viewControllerLayoutGuide type="bottom" id="Bl9-9U-3VK"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="mPe-C6-Bnb">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8mb-Yb-7ot">
+                                <rect key="frame" x="20" y="522.5" width="560" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.18823529410000001" green="0.2666666667" blue="0.61960784310000006" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nfj-CV-SLv" customClass="CPTGraphHostingView">
+                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="0.94023255124147453" green="1" blue="0.96428971918047879" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="nfj-CV-SLv" firstAttribute="leading" secondItem="mPe-C6-Bnb" secondAttribute="leadingMargin" constant="-20" id="25Y-09-vHm"/>
+                            <constraint firstAttribute="trailing" secondItem="8mb-Yb-7ot" secondAttribute="trailing" constant="20" symbolic="YES" id="4sP-md-h23"/>
+                            <constraint firstItem="nfj-CV-SLv" firstAttribute="top" secondItem="aeA-Hk-UEw" secondAttribute="bottom" id="7CU-9N-vz1"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="nfj-CV-SLv" secondAttribute="trailing" constant="-20" id="V2A-vn-jLg"/>
+                            <constraint firstItem="Bl9-9U-3VK" firstAttribute="top" secondItem="nfj-CV-SLv" secondAttribute="bottom" id="ccq-la-Xgo"/>
+                            <constraint firstItem="8mb-Yb-7ot" firstAttribute="leading" secondItem="mPe-C6-Bnb" secondAttribute="leading" constant="20" symbolic="YES" id="mPq-a0-sGx"/>
+                            <constraint firstItem="Bl9-9U-3VK" firstAttribute="top" secondItem="8mb-Yb-7ot" secondAttribute="bottom" constant="8" symbolic="YES" id="qrO-ms-AWu"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Magnetometer" id="QD0-90-BBB">
+                        <barButtonItem key="backBarButtonItem" title="Magneto" id="wNA-oX-BBf"/>
+                        <leftBarButtonItems>
+                            <barButtonItem systemItem="compose" id="KGS-pk-hyX">
+                                <connections>
+                                    <action selector="emailMagnetoDataHandler:" destination="qQ6-dk-KEN" id="8h8-CT-u0R"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="trash" id="a5G-3E-hw1">
+                                <connections>
+                                    <action selector="trashMagnetoDataHandler:" destination="qQ6-dk-KEN" id="f4t-3g-C6W"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
+                        <rightBarButtonItems>
+                            <barButtonItem image="timeline25x25" id="f6J-rn-vBx">
+                                <connections>
+                                    <segue destination="3QL-3d-H1v" kind="show" identifier="magnetoBtnToSetupSegue" id="lyt-Ot-MJj"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="go25x25" id="0tS-gF-UdU">
+                                <connections>
+                                    <action selector="startStopCapturingMagnetoHandler:" destination="qQ6-dk-KEN" id="Qj8-MT-8dz"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="composeUIB" destination="KGS-pk-hyX" id="v8j-1J-Ydw"/>
+                        <outlet property="displayBoardUIL" destination="8mb-Yb-7ot" id="4Cg-ii-KZ0"/>
+                        <outlet property="plotAreaGHV" destination="nfj-CV-SLv" id="VaX-yx-bmc"/>
+                        <outlet property="setupUIB" destination="f6J-rn-vBx" id="TKn-gE-SBT"/>
+                        <outlet property="startStopSensorUIB" destination="0tS-gF-UdU" id="veH-sh-H8F"/>
+                        <outlet property="trashUIB" destination="a5G-3E-hw1" id="kH2-PL-ncB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6oF-Gr-iOV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1491" y="-30"/>
+        </scene>
+        <!--Magneto SetupVC-->
+        <scene sceneID="73e-AD-Slb">
+            <objects>
+                <viewController id="3QL-3d-H1v" customClass="SPTMagnetoSetupVC" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8Jt-Zg-dKt"/>
+                        <viewControllerLayoutGuide type="bottom" id="BWh-tR-L9d"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="41y-7Z-E8s">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bhW-19-me5">
+                                <rect key="frame" x="409" y="91" width="42" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Refresh Rate:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YQ5-ZW-DGL">
+                                <rect key="frame" x="20" y="130" width="229" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEV-Ki-WZY">
+                                <rect key="frame" x="280" y="155" width="5.5" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="50" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MsS-1m-Z4P">
+                                <rect key="frame" x="423" y="154" width="15" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dZB-P4-fRg">
+                                <rect key="frame" x="559" y="156" width="20.5" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" minValue="0.0" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="ycH-9k-fsD">
+                                <rect key="frame" x="278" y="125" width="304" height="31"/>
+                                <connections>
+                                    <action selector="refreshRateHzHandler:" destination="3QL-3d-H1v" eventType="valueChanged" id="GZR-4y-4f6"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kuh-xk-K6p">
+                                <rect key="frame" x="20" y="178" width="560" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.86632250197114025" green="1" blue="0.78051005664583839" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="ycH-9k-fsD" firstAttribute="width" secondItem="41y-7Z-E8s" secondAttribute="width" multiplier="0.5" id="4os-WU-DBY"/>
+                            <constraint firstItem="ycH-9k-fsD" firstAttribute="leading" secondItem="YQ5-ZW-DGL" secondAttribute="trailing" constant="31" id="6Gy-Pa-e4L"/>
+                            <constraint firstItem="ycH-9k-fsD" firstAttribute="top" secondItem="bhW-19-me5" secondAttribute="bottom" constant="14" id="BtV-jJ-zrf"/>
+                            <constraint firstItem="MsS-1m-Z4P" firstAttribute="centerX" secondItem="ycH-9k-fsD" secondAttribute="centerX" id="N3y-4O-EfM"/>
+                            <constraint firstItem="YQ5-ZW-DGL" firstAttribute="centerY" secondItem="ycH-9k-fsD" secondAttribute="centerY" id="QHS-Xn-UwS"/>
+                            <constraint firstItem="dZB-P4-fRg" firstAttribute="trailing" secondItem="ycH-9k-fsD" secondAttribute="trailing" id="Qyt-8Z-DCQ"/>
+                            <constraint firstItem="Kuh-xk-K6p" firstAttribute="leading" secondItem="41y-7Z-E8s" secondAttribute="leadingMargin" id="Swc-5K-BEY"/>
+                            <constraint firstItem="MsS-1m-Z4P" firstAttribute="top" secondItem="ycH-9k-fsD" secondAttribute="bottom" constant="-1" id="UWd-Vs-kFZ"/>
+                            <constraint firstItem="gEV-Ki-WZY" firstAttribute="top" secondItem="ycH-9k-fsD" secondAttribute="bottom" id="YSV-Yn-lDE"/>
+                            <constraint firstItem="Kuh-xk-K6p" firstAttribute="trailing" secondItem="41y-7Z-E8s" secondAttribute="trailingMargin" id="n0F-km-BeD"/>
+                            <constraint firstItem="Kuh-xk-K6p" firstAttribute="top" secondItem="dZB-P4-fRg" secondAttribute="bottom" constant="8" symbolic="YES" id="n63-uH-DoC"/>
+                            <constraint firstItem="gEV-Ki-WZY" firstAttribute="leading" secondItem="ycH-9k-fsD" secondAttribute="leading" id="ngc-6T-OFD"/>
+                            <constraint firstItem="bhW-19-me5" firstAttribute="centerX" secondItem="ycH-9k-fsD" secondAttribute="centerX" id="q39-rh-b50"/>
+                            <constraint firstItem="ycH-9k-fsD" firstAttribute="trailing" secondItem="41y-7Z-E8s" secondAttribute="trailingMargin" id="quK-A1-9zA"/>
+                            <constraint firstItem="dZB-P4-fRg" firstAttribute="top" secondItem="ycH-9k-fsD" secondAttribute="bottom" constant="1" id="rc9-bR-FpX"/>
+                            <constraint firstItem="YQ5-ZW-DGL" firstAttribute="leading" secondItem="41y-7Z-E8s" secondAttribute="leadingMargin" id="t0m-Mk-Qj7"/>
+                            <constraint firstItem="bhW-19-me5" firstAttribute="top" secondItem="8Jt-Zg-dKt" secondAttribute="bottom" constant="27" id="xq8-Wq-Ny3"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="coreDataCountUIL" destination="Kuh-xk-K6p" id="Bqi-bq-1QI"/>
+                        <outlet property="refreshRateHzUIL" destination="bhW-19-me5" id="9Xz-bL-dOE"/>
+                        <outlet property="refreshRateHzUIS" destination="ycH-9k-fsD" id="d0b-k1-P3T"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GEG-Wq-eYT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2162" y="-30"/>
         </scene>
         <!--AccelerometerVC-->
         <scene sceneID="GDb-nB-6gV">
@@ -95,7 +310,7 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Accelerometer" id="IQn-RU-0xj">
-                        <barButtonItem key="backBarButtonItem" title="Back" id="sjo-0C-xZa"/>
+                        <barButtonItem key="backBarButtonItem" title="Accelero" id="sjo-0C-xZa"/>
                         <leftBarButtonItems>
                             <barButtonItem systemItem="compose" id="gh4-UF-Wuc">
                                 <connections>
@@ -124,15 +339,101 @@
                     <connections>
                         <outlet property="composeUIB" destination="gh4-UF-Wuc" id="C95-6Q-wU8"/>
                         <outlet property="displayBoardUIL" destination="oUM-dF-jZb" id="MW4-8X-3U1"/>
-                        <outlet property="goAccelerometerUIB" destination="bFj-QZ-hEB" id="cKk-l2-td7"/>
                         <outlet property="plotAreaGHV" destination="90f-d0-qAt" id="lA5-ib-NGT"/>
                         <outlet property="setupUIB" destination="W91-cx-KTx" id="a17-Fl-yqb"/>
+                        <outlet property="startStopSensorUIB" destination="bFj-QZ-hEB" id="iJ1-Yg-y0W"/>
                         <outlet property="trashUIB" destination="QOX-Bs-Mrr" id="nu9-i8-bqy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wUC-pl-hK5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1491" y="-1604"/>
+        </scene>
+        <!--SetupGyro-->
+        <scene sceneID="hKX-l6-Ry7">
+            <objects>
+                <viewController title="SetupGyro" id="QqD-FO-TWv" customClass="SPTGyroSetupVC" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="m9X-yP-Aqv"/>
+                        <viewControllerLayoutGuide type="bottom" id="f24-xm-dlt"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="vXJ-68-gIg">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rm2-1Y-2gp">
+                                <rect key="frame" x="409" y="80" width="42" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Refresh Rate:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tij-0e-9L3">
+                                <rect key="frame" x="20" y="119" width="235" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="50" minValue="1" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="9NK-95-6kI">
+                                <rect key="frame" x="278" y="114" width="304" height="31"/>
+                                <connections>
+                                    <action selector="refreshRateHzHandler:" destination="QqD-FO-TWv" eventType="valueChanged" id="UOP-iT-t9k"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="74P-Su-cbO">
+                                <rect key="frame" x="280" y="145" width="5.5" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="50" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6KF-1S-kv3">
+                                <rect key="frame" x="422" y="144" width="15" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Zd-V8-8kA">
+                                <rect key="frame" x="559" y="144" width="20.5" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DataPoints" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TWL-fN-nwh">
+                                <rect key="frame" x="20" y="167.5" width="560" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.89257429405798372" green="0.82754106476232836" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="9NK-95-6kI" firstAttribute="trailing" secondItem="vXJ-68-gIg" secondAttribute="trailingMargin" id="70V-Vw-6tq"/>
+                            <constraint firstItem="Rm2-1Y-2gp" firstAttribute="top" secondItem="m9X-yP-Aqv" secondAttribute="bottom" constant="16" id="8im-MF-TXJ"/>
+                            <constraint firstItem="6KF-1S-kv3" firstAttribute="centerX" secondItem="9NK-95-6kI" secondAttribute="centerX" id="Cfl-2Y-gSZ"/>
+                            <constraint firstItem="74P-Su-cbO" firstAttribute="leading" secondItem="9NK-95-6kI" secondAttribute="leading" id="IS6-D2-MTf"/>
+                            <constraint firstItem="TWL-fN-nwh" firstAttribute="leading" secondItem="vXJ-68-gIg" secondAttribute="leadingMargin" id="ISa-Dz-H2p"/>
+                            <constraint firstItem="Rm2-1Y-2gp" firstAttribute="centerX" secondItem="9NK-95-6kI" secondAttribute="centerX" id="Jvk-pY-PJA"/>
+                            <constraint firstItem="6KF-1S-kv3" firstAttribute="top" secondItem="9NK-95-6kI" secondAttribute="bottom" constant="-0.5" id="Qry-5R-fJ9"/>
+                            <constraint firstItem="tij-0e-9L3" firstAttribute="leading" secondItem="vXJ-68-gIg" secondAttribute="leadingMargin" id="Yrq-eZ-yMW"/>
+                            <constraint firstItem="9NK-95-6kI" firstAttribute="leading" secondItem="tij-0e-9L3" secondAttribute="trailing" constant="25" id="Zzn-O0-gHh"/>
+                            <constraint firstItem="9NK-95-6kI" firstAttribute="width" secondItem="vXJ-68-gIg" secondAttribute="width" multiplier="0.5" id="cQs-4k-NHN"/>
+                            <constraint firstItem="2Zd-V8-8kA" firstAttribute="trailing" secondItem="9NK-95-6kI" secondAttribute="trailing" id="ceS-5C-eRp"/>
+                            <constraint firstItem="TWL-fN-nwh" firstAttribute="top" secondItem="74P-Su-cbO" secondAttribute="bottom" constant="8" symbolic="YES" id="eJp-37-z05"/>
+                            <constraint firstItem="TWL-fN-nwh" firstAttribute="trailing" secondItem="vXJ-68-gIg" secondAttribute="trailingMargin" id="hHf-jh-oXV"/>
+                            <constraint firstItem="2Zd-V8-8kA" firstAttribute="top" secondItem="9NK-95-6kI" secondAttribute="bottom" constant="-0.5" id="rKM-Jg-xrf"/>
+                            <constraint firstItem="9NK-95-6kI" firstAttribute="top" secondItem="Rm2-1Y-2gp" secondAttribute="bottom" constant="14" id="tiG-nW-rPN"/>
+                            <constraint firstItem="tij-0e-9L3" firstAttribute="centerY" secondItem="9NK-95-6kI" secondAttribute="centerY" id="wFq-xz-tW2"/>
+                            <constraint firstItem="74P-Su-cbO" firstAttribute="top" secondItem="9NK-95-6kI" secondAttribute="bottom" constant="0.5" id="zx6-68-wic"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="coreDataCountUIL" destination="TWL-fN-nwh" id="baL-VG-8oE"/>
+                        <outlet property="refreshRateHzUIL" destination="Rm2-1Y-2gp" id="9lf-kv-hnK"/>
+                        <outlet property="refreshRateHzUIS" destination="9NK-95-6kI" id="d0s-Hs-7ma"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OTG-Ij-33e" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2162" y="-943"/>
         </scene>
         <!--SetupAccVC-->
         <scene sceneID="wWf-nu-HBV">
@@ -156,7 +457,7 @@
                                 <rect key="frame" x="278" y="114" width="304" height="31"/>
                                 <color key="thumbTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
-                                    <action selector="refreshRateHzHandler:" destination="ZU5-PY-eKS" eventType="valueChanged" id="H3E-1O-GGY"/>
+                                    <action selector="refreshRateHzHandler:" destination="ZU5-PY-eKS" eventType="valueChanged" id="DSL-Vc-UEF"/>
                                 </connections>
                             </slider>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Refresh Rate:  " textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fEa-Cr-ezu">
@@ -232,9 +533,9 @@
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="coreDataCountUIL" destination="Lgh-3Z-4d7" id="Khw-69-2n7"/>
-                        <outlet property="refreshRateHzUIL" destination="Jhe-Vl-Js2" id="VpR-M4-GaV"/>
-                        <outlet property="refreshRateHzUIS" destination="HBm-Ck-XRA" id="KrD-es-291"/>
+                        <outlet property="coreDataCountUIL" destination="fEa-Cr-ezu" id="SRV-WQ-5zU"/>
+                        <outlet property="refreshRateHzUIL" destination="Jhe-Vl-Js2" id="z1C-3g-ouK"/>
+                        <outlet property="refreshRateHzUIS" destination="HBm-Ck-XRA" id="5SW-J1-NDe"/>
                         <segue destination="m50-l0-Ym1" kind="unwind" identifier="unwindFromAcceSetupSegue" unwindAction="returnFromAccelerometerSetupSegue:" id="i00-Ks-D43"/>
                     </connections>
                 </viewController>
@@ -254,7 +555,8 @@
                     </tabBar>
                     <connections>
                         <segue destination="LO9-mc-DgO" kind="relationship" relationship="viewControllers" id="d1A-xP-A2p"/>
-                        <segue destination="SKp-Hp-m6c" kind="relationship" relationship="viewControllers" id="xhj-Wc-LWr"/>
+                        <segue destination="GpF-nh-xgi" kind="relationship" relationship="viewControllers" id="xhj-Wc-LWr"/>
+                        <segue destination="or6-5Y-IvI" kind="relationship" relationship="viewControllers" id="7kq-he-6OO"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LOI-f3-0eG" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -265,7 +567,7 @@
         <scene sceneID="9ZQ-Ss-2cc">
             <objects>
                 <navigationController title="AccelerometerNavVC" automaticallyAdjustsScrollViewInsets="NO" id="LO9-mc-DgO" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Accelerometer" image="scifi25x25" id="epe-KV-uci"/>
+                    <tabBarItem key="tabBarItem" title="Accelero" image="scifi25x25" id="epe-KV-uci"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZGl-hY-gcU">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -280,10 +582,49 @@
             </objects>
             <point key="canvasLocation" x="812" y="-1604"/>
         </scene>
+        <!--Gyro-->
+        <scene sceneID="xSV-3S-o6B">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="GpF-nh-xgi" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Gyro" image="gyroscope25x25" id="Xju-sk-mGo"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0cf-EK-sf5">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="SKp-Hp-m6c" kind="relationship" relationship="rootViewController" id="aWy-9S-ehQ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ku8-zS-fWI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="812" y="-943"/>
+        </scene>
+        <!--Magneto-->
+        <scene sceneID="hxI-7X-wf3">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="or6-5Y-IvI" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Magneto" image="magnet25x25" id="GgK-Ve-gNc"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="V5o-YO-V6H">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="qQ6-dk-KEN" kind="relationship" relationship="rootViewController" id="W8a-s4-Jc6"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OHP-Hu-kLX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="812" y="-30"/>
+        </scene>
     </scenes>
     <resources>
         <image name="go25x25" width="25" height="25"/>
         <image name="gyroscope25x25" width="25" height="25"/>
+        <image name="magnet25x25" width="25" height="25"/>
         <image name="scifi25x25" width="25" height="25"/>
         <image name="timeline25x25" width="25" height="25"/>
     </resources>

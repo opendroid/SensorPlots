@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ATSMotionAccelerometerManagerDelegate <NSObject>
+@protocol ATAccelerometerMotionManagerDelegate <NSObject>
 
-// Informs results and status from 'ATSMotionAccelerometerManager'
+// Informs results and status from 'ATMotionAccelerometerManager'
 @required
 // Called when test results are ready
-- (void) didFinishAccelerometerTestWithResults: (NSArray *) results;
+- (void) didFinishAccelerometerUpdateWithResults: (NSArray *) results;
 
 @optional
 // A single method that calls with all errors.

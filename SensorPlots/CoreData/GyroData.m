@@ -1,15 +1,15 @@
 //
-//  AccelerometerData.m
+//  GyroData.m
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/2/16.
+//  Created by Ajay Thakur on 2/4/16.
 //  Copyright © 2016 Ajay Thaur. All rights reserved.
 //
 
-#import "AccelerometerData.h"
+#import "GyroData.h"
 #import "NSDate+BootTime.h"
 
-@implementation AccelerometerData
+@implementation GyroData
 
 // Insert code here to add functionality to your managed object subclass
 + (NSSet *) keyPathsForValuesAffectingAvgValue {

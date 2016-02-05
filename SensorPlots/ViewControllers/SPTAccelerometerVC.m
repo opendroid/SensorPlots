@@ -6,50 +6,53 @@
 //  Copyright © 2016 Ajay Thaur. All rights reserved.
 //
 
-#import "AppDelegate.h"
+
 #import "SPTAccelerometerVC.h"
-#import "CorePlot-CocoaTouch.h"
 #import "SPTAccelerometerSetupVC.h"
-#import "AccelerometerData.h"
-#import "NSDate+BootTime.h"
-#import "ATSMotionAccelerometerManager.h"
+#import "ATAccelerometerMotionManager.h"
+#import "SPTScatterPlotGraph.h"
 
 @import CoreMotion;
 
-@interface SPTAccelerometerVC() <SPTAccelerometerVCProtocol, MFMailComposeViewControllerDelegate, ATSMotionAccelerometerManagerDelegate, CPTPlotDataSource>
-@property (weak, nonatomic) IBOutlet CPTGraphHostingView *plotAreaGHV;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *goAccelerometerUIB;
-@property (weak, nonatomic) IBOutlet UILabel *displayBoardUIL;
+@interface SPTAccelerometerVC() <SPTAccelerometerVCProtocol, MFMailComposeViewControllerDelegate, ATAccelerometerMotionManagerDelegate, CPTPlotDataSource>
+
+// Bar button icons accessors
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *startStopSensorUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *composeUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *trashUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *setupUIB;
 
+// Graph view accessors
+@property (weak, nonatomic) IBOutlet CPTGraphHostingView *plotAreaGHV;
+
+// Label to shwo different results
+@property (weak, nonatomic) IBOutlet UILabel *displayBoardUIL;
+
 // Accelerometer Manager.
-@property (strong, nonatomic) ATSMotionAccelerometerManager *motionManager;
-@property (atomic) BOOL accelerometerUpdateInProgress; // Maintain if test was running
+@property (strong, nonatomic) ATAccelerometerMotionManager *motionManager;
+@property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (strong, nonatomic) NSNumber *refreshRateHz; // Test refesh rate in Hz
 @property (strong, nonatomic) NSMutableArray *dataArray; // Data result is here
 
 
-// Graph realted
-@property (strong, nonatomic) CPTXYPlotSpace *plotSpace;
+// Handy accessor for plaotSpace
+@property (strong, nonatomic) SPTScatterPlotGraph *accelerometerScatterGraph;
 
 @end
 
 @implementation SPTAccelerometerVC
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.accelerometerUpdateInProgress = NO;
-    self.motionManager = [[ATSMotionAccelerometerManager alloc] init];
+    self.updatesAreInProgress = NO;
+    self.motionManager = [[ATAccelerometerMotionManager alloc] init];
     self.motionManager.delegate = self;
     if (!self.motionManager.isAccelerometerAvailable) {
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
-        self.goAccelerometerUIB.enabled = NO;
+        self.startStopSensorUIB.enabled = NO;
         self.displayBoardUIL.text = @"No Accelerometer available on device.";
         self.displayBoardUIL.textAlignment = NSTextAlignmentCenter;
     }
@@ -57,6 +60,9 @@
     self.displayBoardUIL.text = @"-";
     self.refreshRateHz = self.motionManager.refreshRateHz;
     self.dataArray = [[NSMutableArray alloc] init];
+    
+    // Setup graph area
+    [self setupAccelerometerGraph];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -78,9 +84,14 @@
     }
         
     // Present mail view controller on screen;
-    MFMailComposeViewController *mc = [self.motionManager emailComposerWithTestData];
+    MFMailComposeViewController *mc = [self.motionManager emailComposerWithAccelerometerData];
     mc.mailComposeDelegate = self;
-    [self presentViewController:mc animated:YES completion:NULL];
+    @try {
+        [self presentViewController:mc animated:YES completion:NULL];
+    }
+    @catch (NSException *exception) {
+        self.displayBoardUIL.text = [NSString stringWithFormat:@"No email viewer."];
+    }
 }
 
 - (IBAction)trashAccelerometerDataHandler:(UIBarButtonItem *)sender {
@@ -88,9 +99,9 @@
 }
 
 - (IBAction)startStopCapturingAccelerometerHandler:(UIBarButtonItem *)sender {
-    if (! self.accelerometerUpdateInProgress) {
+    if (! self.updatesAreInProgress) {
         sender.image = [UIImage imageNamed:@"hand25x25"];
-        self.accelerometerUpdateInProgress = YES;
+        self.updatesAreInProgress = YES;
         // Disable other buttons while test in progress.
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
@@ -104,10 +115,11 @@
 }
 
 #pragma mark - ATSMotionAccelerometerManagerDelegate handlers
-- (void) didFinishAccelerometerTestWithResults: (NSArray *) results {
+- (void) didFinishAccelerometerUpdateWithResults: (NSArray *) results {
     [self.dataArray addObjectsFromArray:results];
-    [self graphAccelerometerData];
-    [self.plotSpace.graph reloadData];
+    
+    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.accelerometerScatterGraph.defaultPlotSpace;
+    [plotSpace.graph reloadData];
 }
 
 - (void) accelerometerError: (NSError *) error {
@@ -127,13 +139,13 @@
     self.composeUIB.enabled = YES;
     self.trashUIB.enabled = YES;
     self.setupUIB.enabled = YES;
-    self.accelerometerUpdateInProgress = NO;
+    self.updatesAreInProgress = NO;
     
     [self.dataArray removeAllObjects];
 }
 
 #pragma mark - SPTAccelerometerVCProtocol handlers
-- (void)receiveAcceleratorRefreshRateHz:(NSNumber *)value {
+- (void)receiveAccelerometerRefreshRateHz:(NSNumber *)value {
     self.refreshRateHz = [self.motionManager accelerometerUpdateInterval:value];
 }
 
@@ -172,240 +184,32 @@
     setupVC.delegate = self;
 }
 
-#pragma mark - Utility methods
-// Show 'showAppAlertWithMessage' a utility to show a alert message
-- (void) showAppAlertWithMessage: (NSString *) message
-               andViewController: (SPTAccelerometerVC *) vc {
-    UIAlertController *okVC = [UIAlertController alertControllerWithTitle:@"Sensor Plots" message:message preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-    [okVC addAction:okAction];
-    [vc presentViewController:okVC animated:YES completion:nil];
-}
-
 #pragma mark - Graph Area
 
-- (void) graphAccelerometerData {
-    [self initGraph];
-    [self setupAxis];
-    [self setupScatterPlotX];
-    [self setupScatterPlotY];
-    [self setupScatterPlotZ];
-    [self setupScatterPlotG];
-    [self setupLegend];
-}
-
-- (void) initGraph {
-    // Setup the graph view with a plot space and X/Y Range
-    CPTGraph *graph = [[CPTXYGraph alloc] initWithFrame:self.plotAreaGHV.bounds];
-    self.plotAreaGHV.hostedGraph = graph;
-    graph.plotAreaFrame.paddingBottom = 10;
-    graph.plotAreaFrame.paddingTop = 10;
-    graph.plotAreaFrame.paddingLeft = 10;
-    graph.plotAreaFrame.paddingRight = 10;
-    graph.borderColor = [CPTColor brownColor].cgColor;
-    graph.borderWidth = 3.0;
+- (void) setupAccelerometerGraph {
+    // Get a graphs object
+    self.accelerometerScatterGraph = [[SPTScatterPlotGraph alloc]initWithFrame:self.plotAreaGHV.bounds andTitle:@"Times G"];
     
-    // Define plot area frame.
-    self.plotSpace = (CPTXYPlotSpace *) self.plotAreaGHV.hostedGraph.defaultPlotSpace;
-    self.plotSpace.xRange = [CPTPlotRange plotRangeWithLocation:@-20.0 length:@220];
-    self.plotSpace.yRange = [CPTPlotRange plotRangeWithLocation:@-2.0 length:@4];
+    // Add it to the view
+    self.plotAreaGHV.hostedGraph = self.accelerometerScatterGraph;
     
-    // Set graph title
-    CPTMutableTextStyle *titleStyle = [CPTMutableTextStyle textStyle];
-    titleStyle.color = [CPTColor brownColor];
-    titleStyle.fontSize = 30.0f;
-    titleStyle.fontName = @"HelveticaNeue-Bold";
-    graph.titleTextStyle = titleStyle;
-    graph.title = @"xyz-g Data";
-}
-
-- (void) setupAxis {
-    // Configure Axis lines - green color Axis and style.
-    CPTXYAxisSet *axisSet = (CPTXYAxisSet *) self.plotAreaGHV.hostedGraph.axisSet;
-    CPTMutableLineStyle *axisLineStyle = [CPTMutableLineStyle lineStyle];
-    axisLineStyle.lineWidth = 2.0;
-    axisLineStyle.lineColor = [CPTColor colorWithCGColor:[UIColor darkGrayColor].CGColor];
-    axisSet.xAxis.axisLineStyle = axisLineStyle;
-    axisSet.xAxis.majorTickLineStyle = axisLineStyle;
-    axisSet.xAxis.minorTickLineStyle = axisLineStyle;
-    axisSet.yAxis.axisLineStyle = axisLineStyle;
-    axisSet.yAxis.majorTickLineStyle = axisLineStyle;
-    axisSet.yAxis.minorTickLineStyle = axisLineStyle;
+    // Setup Axis for Gyro
+    [self.accelerometerScatterGraph adjustXAxisRange:@-20.0 length:@325.0 interval:@25.0 ticksPerInterval:2];
+    [self.accelerometerScatterGraph adjustYAxisRange:@-2 length:@4 interval:@1.0 ticksPerInterval:4];
     
-    // Setup major/minor ticks
-    axisSet.xAxis.majorIntervalLength = @20.0;
-    axisSet.xAxis.majorTickLength = 12;
-    axisSet.xAxis.minorTicksPerInterval = 1.0;
-    axisSet.xAxis.minorTickLength = 10.0;
-    axisSet.xAxis.labelingPolicy = CPTAxisLabelingPolicyFixedInterval;
-    axisSet.yAxis.majorIntervalLength = @1.0;
-    axisSet.yAxis.majorTickLength = 12;
-    axisSet.yAxis.minorTicksPerInterval = 4;
-    axisSet.yAxis.minorTickLength = 10.0;
-    axisSet.xAxis.labelingPolicy = CPTAxisLabelingPolicyFixedInterval;
     
-    // Configure grid-lines major and minor
-    CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
-    majorGridLineStyle.lineWidth = 0.5f;
-    majorGridLineStyle.lineColor = [CPTColor grayColor ];
-    axisSet.xAxis.majorGridLineStyle = majorGridLineStyle;
-    axisSet.yAxis.majorGridLineStyle = majorGridLineStyle;
+    // Add scatter plot lines for X,Y,Z and RMS.
+    [self.accelerometerScatterGraph addScatterPlotX:self];
+    [self.accelerometerScatterGraph addScatterPlotY:self];
+    [self.accelerometerScatterGraph addScatterPlotZ:self];
+    [self.accelerometerScatterGraph addScatterPlotAvg:self];
     
-    CPTMutableLineStyle *minorGridLineStyle = [CPTMutableLineStyle lineStyle];
-    minorGridLineStyle.lineWidth = 0.2f;
-    minorGridLineStyle.lineColor = [CPTColor lightGrayColor];
-    axisSet.xAxis.minorGridLineStyle = minorGridLineStyle;
-    axisSet.yAxis.minorGridLineStyle = minorGridLineStyle;
-    
-    // Set up x/y axis labels
-    NSNumberFormatter *labelFormatter = [[NSNumberFormatter alloc] init];
-    labelFormatter.minimumIntegerDigits = 1;
-    labelFormatter.maximumFractionDigits = 0;
-    labelFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-    labelFormatter.groupingSeparator = @",";
-    axisSet.xAxis.labelFormatter = labelFormatter;
-    axisSet.yAxis.labelFormatter = labelFormatter;
-    
-    // Configure font/size of the X/Y titles
-    CPTMutableTextStyle *axisTextStyle = [CPTMutableTextStyle textStyle];
-    axisTextStyle.color = [CPTColor brownColor];
-    axisTextStyle.fontSize = 18.0f;
-    axisTextStyle.fontName = @"HelveticaNeue";
-    axisSet.xAxis.titleTextStyle = axisTextStyle;
-    axisSet.yAxis.titleTextStyle = axisTextStyle;
-    axisSet.xAxis.title = @"Sample";
-    axisSet.yAxis.title = @"Value";
-    axisSet.xAxis.titleOffset = -30;
-    axisSet.yAxis.titleOffset = 2;
-    axisSet.xAxis.titleLocation = @180;
-    axisSet.yAxis.titleLocation = @1;
-}
-
-- (void) setupScatterPlotX {
-    // Setup Scatter plot X.
-    CPTScatterPlot *scatterPlot = [[CPTScatterPlot alloc] initWithFrame:CGRectZero];
-    scatterPlot.dataSource = self;
-    scatterPlot.delegate = self;
-    scatterPlot.identifier = @"X";
-    scatterPlot.title = @"x-value:";
-    scatterPlot.interpolation = CPTScatterPlotInterpolationCurved;
-    
-    // Change Plot line - color and width of scatter plot
-    CPTMutableLineStyle *scatterPlotlineStyle = [[CPTMutableLineStyle alloc] init];
-    scatterPlotlineStyle.lineWidth = 4.0f;
-    scatterPlotlineStyle.lineColor = [CPTColor colorWithCGColor:[UIColor orangeColor].CGColor];
-    scatterPlot.dataLineStyle = scatterPlotlineStyle;
-    
-    // Fill the area under the graph.
-    CPTColor *areaColor = [CPTColor clearColor];
-    CPTGradient *areaGradient = [CPTGradient gradientWithBeginningColor:areaColor endingColor:[CPTColor clearColor]];
-    areaGradient.angle = - 90.0;
-    CPTFill *areaGradientFill = [CPTFill fillWithGradient:areaGradient];
-    scatterPlot.areaFill = areaGradientFill;
-    scatterPlot.areaBaseValue = @0;
-    
-    // Add plot to the graph view
-    [self.plotAreaGHV.hostedGraph addPlot:scatterPlot toPlotSpace:self.plotSpace];
-}
-
-- (void) setupScatterPlotY {
-    // Setup Scatter plot Y.
-    CPTScatterPlot *scatterPlot = [[CPTScatterPlot alloc] initWithFrame:CGRectZero];
-    scatterPlot.dataSource = self;
-    scatterPlot.delegate = self;
-    scatterPlot.identifier = @"Y";
-    scatterPlot.title = @"y-value:";
-    scatterPlot.interpolation = CPTScatterPlotInterpolationCurved;
-    
-    // Change Plot line - color and width of scatter plot
-    CPTMutableLineStyle *scatterPlotlineStyle = [[CPTMutableLineStyle alloc] init];
-    scatterPlotlineStyle.lineWidth = 4.0f;
-    scatterPlotlineStyle.lineColor = [CPTColor colorWithCGColor:[UIColor blueColor].CGColor];
-    scatterPlot.dataLineStyle = scatterPlotlineStyle;
-    
-    // Fill the area under the graph.
-    CPTColor *areaColor = [CPTColor clearColor];
-    CPTGradient *areaGradient = [CPTGradient gradientWithBeginningColor:areaColor endingColor:[CPTColor clearColor]];
-    areaGradient.angle = - 90.0;
-    CPTFill *areaGradientFill = [CPTFill fillWithGradient:areaGradient];
-    scatterPlot.areaFill = areaGradientFill;
-    scatterPlot.areaBaseValue = @0;
-    
-    // Add plot to the graph view
-    [self.plotAreaGHV.hostedGraph addPlot:scatterPlot toPlotSpace:self.plotSpace];
-}
-
-- (void) setupScatterPlotZ {
-    // Setup Scatter plot Z.
-    CPTScatterPlot *scatterPlot = [[CPTScatterPlot alloc] initWithFrame:CGRectZero];
-    scatterPlot.dataSource = self;
-    scatterPlot.delegate = self;
-    scatterPlot.identifier = @"Z";
-    scatterPlot.title = @"z-value:";
-    scatterPlot.interpolation = CPTScatterPlotInterpolationCurved;
-    
-    // Change Plot line - color and width of scatter plot
-    CPTMutableLineStyle *scatterPlotlineStyle = [[CPTMutableLineStyle alloc] init];
-    scatterPlotlineStyle.lineWidth = 4.0f;
-    scatterPlotlineStyle.lineColor = [CPTColor colorWithCGColor:[UIColor brownColor].CGColor];
-    scatterPlot.dataLineStyle = scatterPlotlineStyle;
-    
-    // Fill the area under the graph.
-    CPTColor *areaColor = [CPTColor clearColor];
-    CPTGradient *areaGradient = [CPTGradient gradientWithBeginningColor:areaColor endingColor:[CPTColor clearColor]];
-    areaGradient.angle = - 90.0;
-    CPTFill *areaGradientFill = [CPTFill fillWithGradient:areaGradient];
-    scatterPlot.areaFill = areaGradientFill;
-    scatterPlot.areaBaseValue = @0;
-    
-    // Add plot to the graph view
-    [self.plotAreaGHV.hostedGraph addPlot:scatterPlot toPlotSpace:self.plotSpace];
+    // Add legend after all scatter plots have been added
+    [self.accelerometerScatterGraph addLegendWithXPadding:-(self.view.bounds.size.width / 20) withYPadding:(self.view.bounds.size.height / 40)];
+    self.accelerometerScatterGraph.legendAnchor = CPTRectAnchorBottomRight;
 }
 
 
-- (void) setupScatterPlotG {
-    // Setup Scatter plot G.
-    CPTScatterPlot *scatterPlot = [[CPTScatterPlot alloc] initWithFrame:CGRectZero];
-    scatterPlot.dataSource = self;
-    scatterPlot.delegate = self;
-    scatterPlot.identifier = @"G";
-    scatterPlot.title = @"g-value:";
-    scatterPlot.interpolation = CPTScatterPlotInterpolationCurved;
-    
-    // Change Plot line - color and width of scatter plot
-    CPTMutableLineStyle *scatterPlotlineStyle = [[CPTMutableLineStyle alloc] init];
-    scatterPlotlineStyle.lineWidth = 4.0f;
-    scatterPlotlineStyle.lineColor = [CPTColor colorWithCGColor:[UIColor redColor].CGColor];
-    scatterPlot.dataLineStyle = scatterPlotlineStyle;
-    
-    // Fill the area under the graph.
-    CPTColor *areaColor = [CPTColor clearColor];
-    CPTGradient *areaGradient = [CPTGradient gradientWithBeginningColor:areaColor endingColor:[CPTColor clearColor]];
-    areaGradient.angle = - 90.0;
-    CPTFill *areaGradientFill = [CPTFill fillWithGradient:areaGradient];
-    scatterPlot.areaFill = areaGradientFill;
-    scatterPlot.areaBaseValue = @0;
-    
-    // Add plot to the graph view
-    [self.plotAreaGHV.hostedGraph addPlot:scatterPlot toPlotSpace:self.plotSpace];
-}
-
-
-- (void) setupLegend {
-    // 1 - Create legend
-    CPTLegend *theLegend = [CPTLegend legendWithGraph:self.plotAreaGHV.hostedGraph];
-    // 2 - Configure legend
-    theLegend.numberOfColumns = 1;
-    theLegend.fill = [CPTFill fillWithColor:[CPTColor clearColor]];
-    theLegend.borderLineStyle = [CPTLineStyle lineStyle];
-    theLegend.cornerRadius = 10.0;
-    // 3 - Add legend to graph
-    self.plotAreaGHV.hostedGraph.legend = theLegend;
-    self.plotAreaGHV.hostedGraph.legendAnchor = CPTRectAnchorBottomRight;
-    CGFloat legendWPadding = -(self.view.bounds.size.width / 20);
-    CGFloat legendHPadding = (self.view.bounds.size.height / 40);
-    self.plotAreaGHV.hostedGraph.legendDisplacement = CGPointMake(legendWPadding, legendHPadding);
-}
 #pragma mark - Graph Data
 
 - (NSUInteger)numberOfRecordsForPlot:(CPTPlot *)plot {
@@ -418,14 +222,14 @@
         case CPTScatterPlotFieldX:
             return [NSNumber numberWithUnsignedLong:idx];
 
-        default: // CPTScatterPlotFieldY values
+        default: // CPTScatterPlotFieldY values, the identifiers are hardcoded in SPTScatterPlotGraph
             if ([plot.identifier isEqual:@"X"]) {
                 return [NSNumber numberWithDouble:data.acceleration.x];
             } else if ([plot.identifier isEqual:@"Y"]) {
                 return [NSNumber numberWithDouble:data.acceleration.y];
             } else if ([plot.identifier isEqual:@"Z"]) {
                 return [NSNumber numberWithDouble:data.acceleration.z];
-            } else if ([plot.identifier isEqual:@"G"]) {
+            } else if ([plot.identifier isEqual:@"A"]) {
                 double gValue = sqrt( (data.acceleration.x*data.acceleration.x) + (data.acceleration.y*data.acceleration.y) + (data.acceleration.z*data.acceleration.z));
                 return [NSNumber numberWithDouble:gValue];
             } else {

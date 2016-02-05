@@ -1,54 +1,50 @@
 //
-//  SPTGyroVC.m
+//  SPTMagnetoVC.m
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/2/16.
+//  Created by Ajay Thakur on 2/4/16.
 //  Copyright © 2016 Ajay Thaur. All rights reserved.
 //
 
-#import "SPTGyroVC.h"
-#import "SPTGyroSetupVC.h"
-#import "ATGyroMotionManager.h"
+#import "SPTMagnetoVC.h"
+#import "SPTMagnetoSetupVC.h"
+#import "ATMagnetoMotionManager.h"
 #import "SPTScatterPlotGraph.h"
 
-@interface SPTGyroVC() <SPTGyroVCProtocol, MFMailComposeViewControllerDelegate, ATGyroMotionManagerDelegate, CPTPlotDataSource>
-
-
+@interface SPTMagnetoVC() <SPTMagnetoVCProtocol, MFMailComposeViewControllerDelegate, ATMagnetoMotionManagerDelegate, CPTPlotDataSource>
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *startStopSensorUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *composeUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *trashUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *setupUIB;
 
-
 @property (weak, nonatomic) IBOutlet CPTGraphHostingView *plotAreaGHV;
 @property (weak, nonatomic) IBOutlet UILabel *displayBoardUIL;
 
-// Gyro Manager.
-@property (strong, nonatomic) ATGyroMotionManager *motionManager;
+// Magneto Manager.
+@property (strong, nonatomic) ATMagnetoMotionManager *motionManager;
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (strong, nonatomic) NSNumber *refreshRateHz; // Test refesh rate in Hz
 @property (strong, nonatomic) NSMutableArray *dataArray; // Data result is here
 
 // Handy accessor for plaotSpace
-@property (strong, nonatomic) SPTScatterPlotGraph *gyroScatterGraph;
-
+@property (strong, nonatomic) SPTScatterPlotGraph *magnetoScatterGraph;
 
 @end
 
-@implementation SPTGyroVC
+@implementation SPTMagnetoVC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.updatesAreInProgress = NO;
-    self.motionManager = [[ATGyroMotionManager alloc] init];
+    self.motionManager = [[ATMagnetoMotionManager alloc] init];
     self.motionManager.delegate = self;
-    if (!self.motionManager.isGyroAvailable) {
+    if (!self.motionManager.isMagnetometerAvailable) {
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
         self.startStopSensorUIB.enabled = NO;
-        self.displayBoardUIL.text = @"No Gyro available on device.";
+        self.displayBoardUIL.text = @"No Magnetometer available on device.";
         self.displayBoardUIL.textAlignment = NSTextAlignmentCenter;
     }
     
@@ -57,7 +53,7 @@
     self.dataArray = [[NSMutableArray alloc] init];
     
     // Setup graph area
-    [self setupGyroGraph];
+    [self setupMagnetoGraph];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -69,17 +65,17 @@
 }
 
 #pragma mark - Button Handlers
-- (IBAction)emailGyroDataHandler:(UIBarButtonItem *)sender {
-    // Check if there is data in 'GyroData' to send.
+- (IBAction)emailMagnetoDataHandler:(UIBarButtonItem *)sender {
+    // Check if there is data in 'MagnetometerData' to send.
     
-    NSNumber *itemsCount = self.motionManager.savedCountOfGyroDataPoints;
+    NSNumber *itemsCount = self.motionManager.savedCountOfMagnetoDataPoints;
     if (itemsCount.integerValue < 1) {
         self.displayBoardUIL.text = [NSString stringWithFormat:@"No data to email"];
         return;
     }
     
     // Present mail view controller on screen;
-    MFMailComposeViewController *mc = [self.motionManager emailComposerWithGyroData];
+    MFMailComposeViewController *mc = [self.motionManager emailComposerWithMagnetoData];
     mc.mailComposeDelegate = self;
     @try {
         [self presentViewController:mc animated:YES completion:NULL];
@@ -89,11 +85,11 @@
     }
 }
 
-- (IBAction)trashGyroDataHandler:(UIBarButtonItem *)sender {
-    [self.motionManager trashGyroStoredData];
+- (IBAction)trashMagnetoDataHandler:(UIBarButtonItem *)sender {
+    [self.motionManager trashMagnetoStoredData];
 }
 
-- (IBAction)startStopCapturingGyroHandler:(UIBarButtonItem *)sender {
+- (IBAction)startStopCapturingMagnetoHandler:(UIBarButtonItem *)sender {
     if (! self.updatesAreInProgress) {
         sender.image = [UIImage imageNamed:@"hand25x25"];
         self.updatesAreInProgress = YES;
@@ -101,34 +97,34 @@
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
-        [self.motionManager startGyroUpdates];
+        [self.motionManager startMagnetoUpdates];
         
     } else {
         sender.image = [UIImage imageNamed:@"go25x25"];
-        [self.motionManager stopGyroUpdates];
+        [self.motionManager stopMagnetoUpdates];
     }
 }
 
-#pragma mark - ATSMotionGyroManagerDelegate handlers
-- (void) didFinishGyroUpdateWithResults: (NSArray *) results {
+#pragma mark - ATSMotionMagnetoManagerDelegate handlers
+- (void) didFinishMagnetoUpdateWithResults: (NSArray *) results {
     [self.dataArray addObjectsFromArray:results];
-    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.gyroScatterGraph.defaultPlotSpace;
+    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.magnetoScatterGraph.defaultPlotSpace;
     [plotSpace.graph reloadData];
 }
 
-- (void) gyroError: (NSError *) error {
+- (void) magnetoError: (NSError *) error {
     self.displayBoardUIL.text = [NSString stringWithFormat:@"%@", error.localizedDescription];
 }
 
-- (void) gyroProgressUpdate: (UInt32) count {
+- (void) magnetoProgressUpdate: (UInt32) count {
     self.displayBoardUIL.text = [NSString stringWithFormat:@"%u",count];
 }
 
-- (void) didTrashGyroDataCache {
+- (void) didTrashMagnetoMagnetoCache {
     self.displayBoardUIL.text = @"Deleted stored data";
 }
 
-- (void)didStopGyroUpdate {
+- (void)didStopMagnetoUpdate {
     // Enable other buttons while test in progress.
     self.composeUIB.enabled = YES;
     self.trashUIB.enabled = YES;
@@ -138,12 +134,12 @@
     [self.dataArray removeAllObjects];
 }
 
-#pragma mark - SPTGyroVCProtocol handlers
+#pragma mark - SPTMagnetoVCProtocol handlers
 
 // Get config data from the Setup controller
-- (void)receiveGyroRefreshRateHz:(NSNumber *)value {
+- (void)receiveMagnetoRefreshRateHz:(NSNumber *)value {
     // Pass the data along to the model
-    self.refreshRateHz = [self.motionManager gyroUpdateInterval:value];
+    self.refreshRateHz = [self.motionManager magnetoUpdateInterval:value];
 }
 
 #pragma mark - Mail Composers
@@ -174,61 +170,61 @@
 #pragma mark - Segue Handlers
 // Pass data to child setup controller.
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    SPTGyroSetupVC *setupVC = segue.destinationViewController;
-    setupVC.title = @"Setup Gyro";
+    SPTMagnetoSetupVC *setupVC = segue.destinationViewController;
+    setupVC.title = @"Setup Magneto";
     setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
-    setupVC.countOfTestDataValues = [self.motionManager savedCountOfGyroDataPoints];
+    setupVC.countOfTestDataValues = [self.motionManager savedCountOfMagnetoDataPoints];
     setupVC.delegate = self;
 }
 
-#pragma mark - Gyro Graph View Area
+#pragma mark - Magneto Graph View Area
 
-- (void) setupGyroGraph {
+- (void) setupMagnetoGraph {
     // Get a graphs object
-    self.gyroScatterGraph = [[SPTScatterPlotGraph alloc]initWithFrame:self.plotAreaGHV.bounds andTitle:@"Rad/sec RHS"];
+    self.magnetoScatterGraph = [[SPTScatterPlotGraph alloc]initWithFrame:self.plotAreaGHV.bounds andTitle:@"Micro Tesla"];
     
     // Add it to the view
-    self.plotAreaGHV.hostedGraph = self.gyroScatterGraph;
-
-    // Setup Axis for Gyro
-    [self.gyroScatterGraph adjustXAxisRange:@-20.0 length:@325.0 interval:@25.0 ticksPerInterval:2];
-    [self.gyroScatterGraph adjustYAxisRange:@-20 length:@40 interval:@10.0 ticksPerInterval:1];
+    self.plotAreaGHV.hostedGraph = self.magnetoScatterGraph;
+    
+    // Setup Axis for Magneto
+    [self.magnetoScatterGraph adjustXAxisRange:@-30.0 length:@330.0 interval:@50.0 ticksPerInterval:1];
+    [self.magnetoScatterGraph adjustYAxisRange:@-500 length:@1000 interval:@100.0 ticksPerInterval:1];
     
     
     // Add scatter plot lines for X,Y,Z and RMS.
-    [self.gyroScatterGraph addScatterPlotX:self];
-    [self.gyroScatterGraph addScatterPlotY:self];
-    [self.gyroScatterGraph addScatterPlotZ:self];
-    [self.gyroScatterGraph addScatterPlotAvg:self];
+    [self.magnetoScatterGraph addScatterPlotX:self];
+    [self.magnetoScatterGraph addScatterPlotY:self];
+    [self.magnetoScatterGraph addScatterPlotZ:self];
+    [self.magnetoScatterGraph addScatterPlotAvg:self];
     
     // Add legend after all scatter plots have been added
-    [self.gyroScatterGraph addLegendWithXPadding:-(self.view.bounds.size.width / 20) withYPadding:(self.view.bounds.size.height / 40)];
-    self.gyroScatterGraph.legendAnchor = CPTRectAnchorBottomRight;
-
+    [self.magnetoScatterGraph addLegendWithXPadding:-(self.view.bounds.size.width / 20) withYPadding:(self.view.bounds.size.height / 40)];
+    self.magnetoScatterGraph.legendAnchor = CPTRectAnchorBottomRight;
+    
 }
 
 
-#pragma mark - Gyro Graph Data
+#pragma mark - Magneto Graph Data
 
 - (NSUInteger)numberOfRecordsForPlot:(CPTPlot *)plot {
     return self.dataArray.count;
 }
 
 - (id)numberForPlot:(CPTPlot *)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)idx {
-    CMGyroData *data = [self.dataArray objectAtIndex:idx];
+    CMMagnetometerData *data = [self.dataArray objectAtIndex:idx];
     switch (fieldEnum) {
         case CPTScatterPlotFieldX:
             return [NSNumber numberWithUnsignedLong:idx];
             
         default: // CPTScatterPlotFieldY values, the identifiers are hardcoded in SPTScatterPlotGraph
             if ([plot.identifier isEqual:@"X"]) {
-                return [NSNumber numberWithDouble:data.rotationRate.x];
+                return [NSNumber numberWithDouble:data.magneticField.x];
             } else if ([plot.identifier isEqual:@"Y"]) {
-                return [NSNumber numberWithDouble:data.rotationRate.y];
+                return [NSNumber numberWithDouble:data.magneticField.y];
             } else if ([plot.identifier isEqual:@"Z"]) {
-                return [NSNumber numberWithDouble:data.rotationRate.z];
+                return [NSNumber numberWithDouble:data.magneticField.z];
             } else if ([plot.identifier isEqual:@"A"]) {
-                double rmsValue = sqrt( (data.rotationRate.x*data.rotationRate.x) + (data.rotationRate.y*data.rotationRate.y) + (data.rotationRate.z*data.rotationRate.z));
+                double rmsValue = sqrt( (data.magneticField.x*data.magneticField.x) + (data.magneticField.y*data.magneticField.y) + (data.magneticField.z*data.magneticField.z));
                 return [NSNumber numberWithDouble:rmsValue];
             } else {
                 return @0;

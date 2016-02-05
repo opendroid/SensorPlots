@@ -1,5 +1,5 @@
 //
-//  AccelerometerData+CoreDataProperties.m
+//  GyroData+CoreDataProperties.m
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/4/16.
@@ -9,15 +9,15 @@
 //  to delete and recreate this implementation file for your updated model.
 //
 
-#import "AccelerometerData+CoreDataProperties.h"
+#import "GyroData+CoreDataProperties.h"
 
-@implementation AccelerometerData (CoreDataProperties)
+@implementation GyroData (CoreDataProperties)
 
-@dynamic avgValue;
-@dynamic timeInterval;
-@dynamic timestamp;
 @dynamic x;
 @dynamic y;
 @dynamic z;
+@dynamic timestamp;
+@dynamic timeInterval;
+@dynamic avgValue;
 
 @end

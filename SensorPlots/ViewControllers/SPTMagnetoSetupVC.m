@@ -1,23 +1,21 @@
 //
-//  SPTAccelerometerSetupVC.m
+//  SPTMagnetoSetupVC.m
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/2/16.
+//  Created by Ajay Thakur on 2/4/16.
 //  Copyright © 2016 Ajay Thaur. All rights reserved.
 //
 
-#import "AppDelegate.h"
-#import "SPTAccelerometerSetupVC.h"
-#import "AccelerometerData.h"
-@interface SPTAccelerometerSetupVC()
+#import "SPTMagnetoSetupVC.h"
+
+@interface SPTMagnetoSetupVC()
 @property (weak, nonatomic) IBOutlet UISlider *refreshRateHzUIS;
 @property (weak, nonatomic) IBOutlet UILabel *refreshRateHzUIL;
 @property (weak, nonatomic) IBOutlet UILabel *coreDataCountUIL;
 
 @end
 
-@implementation SPTAccelerometerSetupVC
-
+@implementation SPTMagnetoSetupVC
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -37,8 +35,8 @@
         self.refreshRateHzUIS.value = 100.0;
     }
     
-    if(self.delegate && [self.delegate respondsToSelector:@selector(receiveAccelerometerRefreshRateHz:)]) {
-        [self.delegate receiveAccelerometerRefreshRateHz:[NSNumber numberWithFloat:self.refreshRateHzUIS.value]];
+    if(self.delegate && [self.delegate respondsToSelector:@selector(receiveMagnetoRefreshRateHz:)]) {
+        [self.delegate receiveMagnetoRefreshRateHz:[NSNumber numberWithFloat:self.refreshRateHzUIS.value]];
     }
 }
 

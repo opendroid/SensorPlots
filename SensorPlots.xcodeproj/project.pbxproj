@@ -21,7 +21,18 @@
 		7430150E1C6173410039DCA7 /* AccelerometerData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7430150C1C6173410039DCA7 /* AccelerometerData.m */; };
 		743015141C6190E20039DCA7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 743015131C6190E20039DCA7 /* MessageUI.framework */; };
 		743015171C61CEE10039DCA7 /* NSDate+BootTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 743015161C61CEE10039DCA7 /* NSDate+BootTime.m */; };
-		746C56361C625337005984E2 /* ATSMotionAccelerometerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 746C56351C625337005984E2 /* ATSMotionAccelerometerManager.m */; };
+		746C56361C625337005984E2 /* ATAccelerometerMotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 746C56351C625337005984E2 /* ATAccelerometerMotionManager.m */; };
+		746DD2FE1C63CD8700200320 /* ATGyroMotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD2FD1C63CD8700200320 /* ATGyroMotionManager.m */; };
+		746DD3091C63E28500200320 /* GyroData+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3021C63E28500200320 /* GyroData+CoreDataProperties.m */; };
+		746DD30A1C63E28500200320 /* GyroData.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3041C63E28500200320 /* GyroData.m */; };
+		746DD30B1C63E28500200320 /* MagnetoData+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3061C63E28500200320 /* MagnetoData+CoreDataProperties.m */; };
+		746DD30C1C63E28500200320 /* MagnetoData.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3081C63E28500200320 /* MagnetoData.m */; };
+		746DD30F1C63E5B500200320 /* ATMagnetoMotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD30E1C63E5B500200320 /* ATMagnetoMotionManager.m */; };
+		746DD3131C63FA8C00200320 /* SPTMagnetoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3121C63FA8C00200320 /* SPTMagnetoVC.m */; };
+		746DD3161C64048300200320 /* SPTGyroSetupVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3151C64048300200320 /* SPTGyroSetupVC.m */; };
+		746DD3191C64076400200320 /* SPTMagnetoSetupVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3181C64076400200320 /* SPTMagnetoSetupVC.m */; };
+		746DD31C1C642CC000200320 /* SPTScatterPlotGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD31B1C642CC000200320 /* SPTScatterPlotGraph.m */; };
+		746DD31F1C6486F500200320 /* ATOUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD31E1C6486F500200320 /* ATOUtilities.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,9 +58,33 @@
 		743015131C6190E20039DCA7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		743015151C61CEE10039DCA7 /* NSDate+BootTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDate+BootTime.h"; path = "Utilities/NSDate+BootTime.h"; sourceTree = "<group>"; };
 		743015161C61CEE10039DCA7 /* NSDate+BootTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDate+BootTime.m"; path = "Utilities/NSDate+BootTime.m"; sourceTree = "<group>"; };
-		746C56341C625337005984E2 /* ATSMotionAccelerometerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATSMotionAccelerometerManager.h; path = SensorModels/ATSMotionAccelerometerManager.h; sourceTree = "<group>"; };
-		746C56351C625337005984E2 /* ATSMotionAccelerometerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATSMotionAccelerometerManager.m; path = SensorModels/ATSMotionAccelerometerManager.m; sourceTree = "<group>"; };
+		746C56341C625337005984E2 /* ATAccelerometerMotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATAccelerometerMotionManager.h; path = SensorModels/ATAccelerometerMotionManager.h; sourceTree = "<group>"; };
+		746C56351C625337005984E2 /* ATAccelerometerMotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATAccelerometerMotionManager.m; path = SensorModels/ATAccelerometerMotionManager.m; sourceTree = "<group>"; };
 		746C56371C625722005984E2 /* ATSMotionAccelerometerManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATSMotionAccelerometerManagerDelegate.h; sourceTree = "<group>"; };
+		746DD2FC1C63CD8700200320 /* ATGyroMotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATGyroMotionManager.h; path = SensorModels/ATGyroMotionManager.h; sourceTree = "<group>"; };
+		746DD2FD1C63CD8700200320 /* ATGyroMotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATGyroMotionManager.m; path = SensorModels/ATGyroMotionManager.m; sourceTree = "<group>"; };
+		746DD3001C63DCEA00200320 /* ATGyroMotionManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATGyroMotionManagerDelegate.h; path = SensorModels/ATGyroMotionManagerDelegate.h; sourceTree = "<group>"; };
+		746DD3011C63E28500200320 /* GyroData+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "GyroData+CoreDataProperties.h"; path = "SensorPlots/CoreData/GyroData+CoreDataProperties.h"; sourceTree = "<group>"; };
+		746DD3021C63E28500200320 /* GyroData+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "GyroData+CoreDataProperties.m"; path = "SensorPlots/CoreData/GyroData+CoreDataProperties.m"; sourceTree = "<group>"; };
+		746DD3031C63E28500200320 /* GyroData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GyroData.h; path = SensorPlots/CoreData/GyroData.h; sourceTree = "<group>"; };
+		746DD3041C63E28500200320 /* GyroData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GyroData.m; path = SensorPlots/CoreData/GyroData.m; sourceTree = "<group>"; };
+		746DD3051C63E28500200320 /* MagnetoData+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MagnetoData+CoreDataProperties.h"; path = "SensorPlots/CoreData/MagnetoData+CoreDataProperties.h"; sourceTree = "<group>"; };
+		746DD3061C63E28500200320 /* MagnetoData+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MagnetoData+CoreDataProperties.m"; path = "SensorPlots/CoreData/MagnetoData+CoreDataProperties.m"; sourceTree = "<group>"; };
+		746DD3071C63E28500200320 /* MagnetoData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MagnetoData.h; path = SensorPlots/CoreData/MagnetoData.h; sourceTree = "<group>"; };
+		746DD3081C63E28500200320 /* MagnetoData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MagnetoData.m; path = SensorPlots/CoreData/MagnetoData.m; sourceTree = "<group>"; };
+		746DD30D1C63E5B500200320 /* ATMagnetoMotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATMagnetoMotionManager.h; path = SensorModels/ATMagnetoMotionManager.h; sourceTree = "<group>"; };
+		746DD30E1C63E5B500200320 /* ATMagnetoMotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATMagnetoMotionManager.m; path = SensorModels/ATMagnetoMotionManager.m; sourceTree = "<group>"; };
+		746DD3101C63E5D400200320 /* ATMagnetoMotionManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATMagnetoMotionManagerDelegate.h; path = SensorModels/ATMagnetoMotionManagerDelegate.h; sourceTree = "<group>"; };
+		746DD3111C63FA8C00200320 /* SPTMagnetoVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTMagnetoVC.h; path = ViewControllers/SPTMagnetoVC.h; sourceTree = "<group>"; };
+		746DD3121C63FA8C00200320 /* SPTMagnetoVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTMagnetoVC.m; path = ViewControllers/SPTMagnetoVC.m; sourceTree = "<group>"; };
+		746DD3141C64048300200320 /* SPTGyroSetupVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTGyroSetupVC.h; path = ViewControllers/SPTGyroSetupVC.h; sourceTree = "<group>"; };
+		746DD3151C64048300200320 /* SPTGyroSetupVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTGyroSetupVC.m; path = ViewControllers/SPTGyroSetupVC.m; sourceTree = "<group>"; };
+		746DD3171C64076400200320 /* SPTMagnetoSetupVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTMagnetoSetupVC.h; path = ViewControllers/SPTMagnetoSetupVC.h; sourceTree = "<group>"; };
+		746DD3181C64076400200320 /* SPTMagnetoSetupVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTMagnetoSetupVC.m; path = ViewControllers/SPTMagnetoSetupVC.m; sourceTree = "<group>"; };
+		746DD31A1C642CC000200320 /* SPTScatterPlotGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTScatterPlotGraph.h; path = Utilities/SPTScatterPlotGraph.h; sourceTree = "<group>"; };
+		746DD31B1C642CC000200320 /* SPTScatterPlotGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTScatterPlotGraph.m; path = Utilities/SPTScatterPlotGraph.m; sourceTree = "<group>"; };
+		746DD31D1C6486F500200320 /* ATOUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATOUtilities.h; path = Utilities/ATOUtilities.h; sourceTree = "<group>"; };
+		746DD31E1C6486F500200320 /* ATOUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATOUtilities.m; path = Utilities/ATOUtilities.m; sourceTree = "<group>"; };
 		8841389BD8F7B0FCBFD7C4B3 /* libPods-SensorPlots.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SensorPlots.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		95E5A7E6203FCC6E5692886B /* Pods-SensorPlots.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SensorPlots.release.xcconfig"; path = "Pods/Target Support Files/Pods-SensorPlots/Pods-SensorPlots.release.xcconfig"; sourceTree = "<group>"; };
 		9BF3B0E02958C624F3223C3F /* Pods-SensorPlots.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SensorPlots.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SensorPlots/Pods-SensorPlots.debug.xcconfig"; sourceTree = "<group>"; };
@@ -122,6 +157,12 @@
 				743014F71C612CDE0039DCA7 /* SPTAccelerometerSetupVC.m */,
 				743014F91C612D0A0039DCA7 /* SPTGyroVC.h */,
 				743014FA1C612D0A0039DCA7 /* SPTGyroVC.m */,
+				746DD3141C64048300200320 /* SPTGyroSetupVC.h */,
+				746DD3151C64048300200320 /* SPTGyroSetupVC.m */,
+				746DD3111C63FA8C00200320 /* SPTMagnetoVC.h */,
+				746DD3121C63FA8C00200320 /* SPTMagnetoVC.m */,
+				746DD3171C64076400200320 /* SPTMagnetoSetupVC.h */,
+				746DD3181C64076400200320 /* SPTMagnetoSetupVC.m */,
 			);
 			name = VC;
 			sourceTree = "<group>";
@@ -129,6 +170,14 @@
 		743015001C6172A80039DCA7 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				746DD3011C63E28500200320 /* GyroData+CoreDataProperties.h */,
+				746DD3021C63E28500200320 /* GyroData+CoreDataProperties.m */,
+				746DD3031C63E28500200320 /* GyroData.h */,
+				746DD3041C63E28500200320 /* GyroData.m */,
+				746DD3051C63E28500200320 /* MagnetoData+CoreDataProperties.h */,
+				746DD3061C63E28500200320 /* MagnetoData+CoreDataProperties.m */,
+				746DD3071C63E28500200320 /* MagnetoData.h */,
+				746DD3081C63E28500200320 /* MagnetoData.m */,
 				743015091C6173410039DCA7 /* AccelerometerData+CoreDataProperties.h */,
 				7430150A1C6173410039DCA7 /* AccelerometerData+CoreDataProperties.m */,
 				7430150B1C6173410039DCA7 /* AccelerometerData.h */,
@@ -143,6 +192,10 @@
 			children = (
 				743015151C61CEE10039DCA7 /* NSDate+BootTime.h */,
 				743015161C61CEE10039DCA7 /* NSDate+BootTime.m */,
+				746DD31A1C642CC000200320 /* SPTScatterPlotGraph.h */,
+				746DD31B1C642CC000200320 /* SPTScatterPlotGraph.m */,
+				746DD31D1C6486F500200320 /* ATOUtilities.h */,
+				746DD31E1C6486F500200320 /* ATOUtilities.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -150,9 +203,15 @@
 		746C56331C62529F005984E2 /* SensorModels */ = {
 			isa = PBXGroup;
 			children = (
-				746C56341C625337005984E2 /* ATSMotionAccelerometerManager.h */,
-				746C56351C625337005984E2 /* ATSMotionAccelerometerManager.m */,
 				746C56371C625722005984E2 /* ATSMotionAccelerometerManagerDelegate.h */,
+				746DD3001C63DCEA00200320 /* ATGyroMotionManagerDelegate.h */,
+				746DD3101C63E5D400200320 /* ATMagnetoMotionManagerDelegate.h */,
+				746C56341C625337005984E2 /* ATAccelerometerMotionManager.h */,
+				746C56351C625337005984E2 /* ATAccelerometerMotionManager.m */,
+				746DD2FC1C63CD8700200320 /* ATGyroMotionManager.h */,
+				746DD2FD1C63CD8700200320 /* ATGyroMotionManager.m */,
+				746DD30D1C63E5B500200320 /* ATMagnetoMotionManager.h */,
+				746DD30E1C63E5B500200320 /* ATMagnetoMotionManager.m */,
 			);
 			name = SensorModels;
 			sourceTree = "<group>";
@@ -296,15 +355,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				746DD31F1C6486F500200320 /* ATOUtilities.m in Sources */,
 				743014E61C6118760039DCA7 /* SensorPlots.xcdatamodeld in Sources */,
+				746DD30A1C63E28500200320 /* GyroData.m in Sources */,
+				746DD31C1C642CC000200320 /* SPTScatterPlotGraph.m in Sources */,
+				746DD30B1C63E28500200320 /* MagnetoData+CoreDataProperties.m in Sources */,
+				746DD3161C64048300200320 /* SPTGyroSetupVC.m in Sources */,
+				746DD3191C64076400200320 /* SPTMagnetoSetupVC.m in Sources */,
 				743014DD1C6118760039DCA7 /* AppDelegate.m in Sources */,
-				746C56361C625337005984E2 /* ATSMotionAccelerometerManager.m in Sources */,
+				746DD30F1C63E5B500200320 /* ATMagnetoMotionManager.m in Sources */,
+				746DD2FE1C63CD8700200320 /* ATGyroMotionManager.m in Sources */,
+				746C56361C625337005984E2 /* ATAccelerometerMotionManager.m in Sources */,
+				746DD3131C63FA8C00200320 /* SPTMagnetoVC.m in Sources */,
 				743014F41C612CA40039DCA7 /* SPTAccelerometerVC.m in Sources */,
 				7430150E1C6173410039DCA7 /* AccelerometerData.m in Sources */,
 				743014FB1C612D0A0039DCA7 /* SPTGyroVC.m in Sources */,
+				746DD30C1C63E28500200320 /* MagnetoData.m in Sources */,
 				743014DA1C6118760039DCA7 /* main.m in Sources */,
 				743015171C61CEE10039DCA7 /* NSDate+BootTime.m in Sources */,
 				743014F81C612CDE0039DCA7 /* SPTAccelerometerSetupVC.m in Sources */,
+				746DD3091C63E28500200320 /* GyroData+CoreDataProperties.m in Sources */,
 				7430150D1C6173410039DCA7 /* AccelerometerData+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

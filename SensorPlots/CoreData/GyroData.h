@@ -1,8 +1,8 @@
 //
-//  AccelerometerData.h
+//  GyroData.h
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/2/16.
+//  Created by Ajay Thakur on 2/4/16.
 //  Copyright © 2016 Ajay Thaur. All rights reserved.
 //
 
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AccelerometerData : NSManagedObject
+@interface GyroData : NSManagedObject
 
 // Insert code here to declare functionality of your managed object subclass
 - (NSNumber *) avgValue;
@@ -21,4 +21,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#import "AccelerometerData+CoreDataProperties.h"
+#import "GyroData+CoreDataProperties.h"

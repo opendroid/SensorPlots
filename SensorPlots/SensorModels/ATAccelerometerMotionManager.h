@@ -10,9 +10,9 @@
 #import <MessageUI/MessageUI.h>
 #import "ATSMotionAccelerometerManagerDelegate.h"
 
-@interface ATSMotionAccelerometerManager : CMMotionManager
+@interface ATAccelerometerMotionManager : CMMotionManager
 
-@property (strong, nonatomic) id<ATSMotionAccelerometerManagerDelegate> delegate;
+@property (strong, nonatomic) id<ATAccelerometerMotionManagerDelegate> delegate;
 @property (strong, nonatomic) NSNumber *refreshRateHz;
 
 // Initilizers
@@ -36,6 +36,6 @@
 - (void) trashAccelerometerStoredData;
 
 // A composer with a all data attachement.
-- (MFMailComposeViewController *) emailComposerWithTestData;
+- (MFMailComposeViewController *) emailComposerWithAccelerometerData;
 
 @end
