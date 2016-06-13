@@ -3,23 +3,26 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/4/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import "ATMagnetoMotionManager.h"
 #import "AppDelegate.h"
 #import "MagnetoData.h"
 #import "ATOUtilities.h"
-
+#import "ATSensorData.h"
+#import "SPTConstants.h"
 
 @interface ATMagnetoMotionManager()
 
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (strong, nonatomic) NSMutableArray *dataArray; // Values of Magneto are saved here.
+@property (strong, nonatomic) NSMutableArray *incomingDataArray; // Incoming data from IOS
+@property (strong, nonatomic) NSMutableArray *outgoingDataArray; // Data sent to View Controller
 @property (strong, nonatomic) AppDelegate *appDelegate;
 
-@property (atomic) BOOL magnetoUpdatesInProgress;
+@property (atomic) BOOL magnetoUpdatesStartedByUser;
+@property (atomic) __block BOOL magnetoUpdatesStoppedByUser; // Checked in block.
 @property (atomic) UInt32 realTimeCountOfMagnetoDataPoints;
 @end
 
@@ -38,12 +41,12 @@
             }
         }
         self.managedObjectContext = self.appDelegate.managedObjectContext;
-        self.dataArray = [[NSMutableArray alloc] init];
     }
-    if ((!self.motionManager) || (!self.managedObjectContext) || (!self.dataArray) ) {
+    if ((!self.motionManager) || (!self.managedObjectContext)) {
         return nil; // Initilization failed.
     }
-    self.magnetoUpdatesInProgress = NO;
+    self.magnetoUpdatesStartedByUser = NO;
+    self.magnetoUpdatesStoppedByUser = NO;
     return self;
 }
 
@@ -101,7 +104,7 @@
         [self.delegate willStartMagnetoUpdate];
     }
     
-    if(self.magnetoUpdatesInProgress) {
+    if(self.magnetoUpdatesStartedByUser) {
         // Inform the error
         if (self.delegate && [self.delegate respondsToSelector:@selector(magnetoError:)]) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey:@"Magneto updates already in progress.",
@@ -116,19 +119,32 @@
     
     // Fetch the values and save them
     self.realTimeCountOfMagnetoDataPoints = 0;
-    [self.dataArray removeAllObjects]; // Remove old data
-    self.magnetoUpdatesInProgress = YES;
+    self.incomingDataArray = [[NSMutableArray alloc] init];
+    self.magnetoUpdatesStartedByUser = YES;
     NSOperationQueue *opsQueue = [[NSOperationQueue alloc] init];
     opsQueue.name = @"SPTMagneto";
     // relatively higher QoS but lower than User interation so they can stop the updates
     opsQueue.qualityOfService = NSQualityOfServiceUserInitiated;
     self.motionManager.magnetometerUpdateInterval = 1.0 / self.refreshRateHz.floatValue;
     [self.motionManager startMagnetometerUpdatesToQueue:opsQueue withHandler:^(CMMagnetometerData * _Nullable magnetoData, NSError * _Nullable error) {
-        if (error || !self.magnetoUpdatesInProgress){
+        if (error || !magnetoData || self.magnetoUpdatesStoppedByUser){
             return; // Dont save data after test is stopped
         }
         // Save it in memory array
-        [self.dataArray addObject:magnetoData];
+        @try {
+            ATSensorData *data = [[ATSensorData alloc] initWithUpdateX:magnetoData.magneticField.x Y:magnetoData.magneticField.y Z:magnetoData.magneticField.z timeInterval:magnetoData.timestamp];
+            
+            if (data) {
+                [self.incomingDataArray addObject:data];
+            }
+            if (self.incomingDataArray.count > kATIncomingQMaxCount) {
+                NSMutableArray *saveArray = self.incomingDataArray;
+                self.incomingDataArray = [[NSMutableArray alloc] init];
+                [self saveMagnetoDataToCoreDataFromArray:saveArray];
+            }
+        } @catch (NSException *exception) {
+            NSLog(@"Gyro Exception: %@", exception.debugDescription); // put breakpoint here
+        }
         
         // Update delegate that another data has arrived:
         self.realTimeCountOfMagnetoDataPoints++;
@@ -153,8 +169,10 @@
 }
 
 - (void) stopMagnetoUpdates {
+    [self.motionManager stopMagnetometerUpdates];
+    
     // Check if test was running
-    if(!self.magnetoUpdatesInProgress) {
+    if(!self.magnetoUpdatesStartedByUser) {
         // Inform the iser of error
         if (self.delegate && [self.delegate respondsToSelector:@selector(magnetoError:)]) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey:@"Magnetometer update is not progress.",
@@ -167,28 +185,54 @@
         }
     }
     
-    // Stop the test.
-    self.magnetoUpdatesInProgress = NO;
-    [self.motionManager stopMagnetometerUpdates];
+    // Control variables.
+    self.outgoingDataArray = self.incomingDataArray;
+    self.magnetoUpdatesStartedByUser = NO;
+    self.magnetoUpdatesStoppedByUser = YES;
+
     
     // Protocol - did stop the test
     if (self.delegate && [self.delegate respondsToSelector:@selector(didStopMagnetoUpdate)]) {
         [self.delegate didStopMagnetoUpdate];
     }
     
-    // save data to CoreData
-    [self saveMagnetoDataToCoreData];
-    
-    // Pass on the results
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didFinishMagnetoUpdateWithResults:)]) {
-        [self.delegate didFinishMagnetoUpdateWithResults:self.dataArray];
-    }
+    [self processResultsInSeparateThread];
 }
 
+- (void) processResultsInSeparateThread {
+    dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0ul);
+    dispatch_async(queue, ^{
+        // Save data in CoreData - thread safe.
+        [self saveMagnetoDataToCoreData];
+        
+        // Calculate Max and Min Y
+        double maxSampleValue = 0.0, minSampleValue = 0.0;
+        for (ATSensorData *d in self.outgoingDataArray) {
+            double rms = sqrt((d.x * d.x) + (d.y * d.y) + (d.z * d.z));
+            if (maxSampleValue < rms) maxSampleValue = rms;
+            if (minSampleValue > d.x) minSampleValue = d.x;
+            if (minSampleValue > d.y) minSampleValue = d.y;
+            if (minSampleValue > d.z) minSampleValue = d.z;
+        }
+        NSNumber *maxSampleV = [NSNumber numberWithDouble:maxSampleValue];
+        NSNumber *minSampleV = [NSNumber numberWithDouble:minSampleValue];
+        
+        
+        // Update delegate in main thread. So they can do UX operations
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didFinishMagnetoUpdateWithResults:maxSampleValue:minSampleValue:)]) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self.delegate didFinishMagnetoUpdateWithResults:self.outgoingDataArray maxSampleValue:maxSampleV minSampleValue:minSampleV];
+                self.magnetoUpdatesStoppedByUser = NO;
+            });
+        } else {
+            self.magnetoUpdatesStoppedByUser = NO;
+        }
+    });
+}
 
 - (MFMailComposeViewController *) emailComposerWithMagnetoData {
     //Get a file name to write the data to using the documents directory:
-    NSString *fileName = [ATOUtilities createDataFilePathForName:@"Magneto.csv"];
+    NSString *fileName = [ATOUtilities createDataFilePathForName:kATCSVDataFilenameMagneto];
     
     // Read contents from CoreData table and store in a NSMutableString
     NSMutableString *coreDataString = [[NSMutableString alloc] init];
@@ -197,11 +241,11 @@
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timeInterval" ascending:NO]];
     NSError *fetchError;
     NSArray *results = [self.managedObjectContext executeFetchRequest:fetchRequest error:&fetchError];
-    [coreDataString appendString:@"x_micro_tesla,y_micro_tesla,z_micro_tesla,rms_micro_tesla,TimeInterval,Date\n"];
+    [coreDataString appendString:@"x_micro_tesla,y_micro_tesla,z_micro_tesla,rms_micro_tesla,TimeInterval,Date_approximate\n"];
     
     // Extract the data
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS Z";
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSSSSS Z";
     for (MagnetoData *d in results) {
         NSString *dateTime = [formatter stringFromDate:d.timestamp];
         NSString *rowData = [NSString stringWithFormat:@"%f,%f,%f,%f,%f,%@\n", d.x.doubleValue, d.y.doubleValue, d.z.doubleValue, d.avgValue.doubleValue, d.timeInterval.doubleValue, dateTime];
@@ -213,14 +257,10 @@
     NSData *fileData = [NSData dataWithContentsOfFile:fileName];
     
     // Create the Email message with attachment and compose a viewer
-    NSString *emailTitle = @"PlutoApps: Your Magneto test data"; // Email Subject
-    NSString *messageBody = @"Your data is in attached file Magneto.csv. The units are in Micro Tesla."
-                " The data are sorted by timestamp in decending order."
-                " If you have questions email me at plutoapps@outlook.com\n";
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-    [mc setSubject:emailTitle];
-    [mc setMessageBody:messageBody isHTML:NO];
-    [mc addAttachmentData:fileData mimeType:@"text/csv" fileName:@"Magneto.csv"];
+    [mc setSubject:kATEmailSubjectMagneto];
+    [mc setMessageBody:kATEmailBodyMagneto isHTML:NO];
+    [mc addAttachmentData:fileData mimeType:@"text/csv" fileName:kATCSVDataFilenameMagneto];
     
     return mc;
 }
@@ -258,14 +298,11 @@
     }
     
     // 2. Clear .csv file if created for email purposes
-    NSString *filePathName = [ATOUtilities createDataFilePathForName:@"Magneto.csv"];
+    NSString *filePathName = [ATOUtilities createDataFilePathForName:kATCSVDataFilenameMagneto];
     [[NSFileManager defaultManager] removeItemAtPath:filePathName error:&deleteError];
     if (deleteError && self.delegate && [self.delegate respondsToSelector:@selector(magnetoError:)]) {
         [self.delegate magnetoError:deleteError];
     }
-    
-    // 3. Clear Memory
-    [self.dataArray removeAllObjects];
     
     // Protocol - completed trashing the data
     if (self.delegate && [self.delegate respondsToSelector:@selector(didTrashMagnetoDataCache)]) {
@@ -275,22 +312,29 @@
 
 #pragma mark - Core Data Table
 - (void) saveMagnetoDataToCoreData {
-    
-    for (CMMagnetometerData *d in self.dataArray) {
-        MagnetoData *data = [NSEntityDescription insertNewObjectForEntityForName:@"MagnetoData" inManagedObjectContext:self.managedObjectContext];
-        data.x = [NSNumber numberWithDouble:d.magneticField.x];
-        data.y = [NSNumber numberWithDouble:d.magneticField.y];
-        data.z = [NSNumber numberWithDouble:d.magneticField.z];
-        data.timeInterval = [NSNumber numberWithDouble:d.timestamp]; // Time since last phone bootup.
-    }
-    
-    NSError *error;
-    BOOL isSaved = [self.managedObjectContext save:&error];
-    if (!isSaved) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(magnetoError:)]) {
-            [self.delegate magnetoError:error];
+    [self saveMagnetoDataToCoreDataFromArray:self.outgoingDataArray];
+}
+
+- (void) saveMagnetoDataToCoreDataFromArray: (NSMutableArray *) incomingArray {
+    [self.managedObjectContext performBlock:^{
+        for (ATSensorData *d in incomingArray) {
+            MagnetoData *data = [NSEntityDescription insertNewObjectForEntityForName:@"MagnetoData" inManagedObjectContext:self.managedObjectContext];
+            data.x = [NSNumber numberWithDouble:d.x];
+            data.y = [NSNumber numberWithDouble:d.y];
+            data.z = [NSNumber numberWithDouble:d.z];
+            data.timeInterval = [NSNumber numberWithDouble:d.timestamp]; // Time since last phone bootup.
         }
-    }
+        
+        __block NSError *error;
+        BOOL isSaved = [self.managedObjectContext save:&error];
+        if (!isSaved) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(magnetoError:)]) {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self.delegate magnetoError:error];
+                });
+            }
+        }
+    }];
 }
 
 

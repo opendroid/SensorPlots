@@ -3,10 +3,11 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/2/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import "AppDelegate.h"
+#import <Google/Analytics.h>
 
 @interface AppDelegate ()
 
@@ -16,6 +17,18 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    // Configure tracker from GoogleService-Info.plist.
+    NSError *configureError;
+    [[GGLContext sharedInstance] configureWithError:&configureError];
+    NSAssert(!configureError, @"Error configuring Google services: %@", configureError);
+    
+    // Optional: configure GAI options.
+    GAI *gai = [GAI sharedInstance];
+    gai.trackUncaughtExceptions = YES;  // report uncaught exceptions
+    // gai.logger.logLevel = kGAILogLevelVerbose;  // remove before app release
+    
+    
     return YES;
 }
 
@@ -42,6 +55,33 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     [self saveContext];
+}
+
+//  Setup Open URL for custom link
+//       sensorplots://gyro - Opens gyro VC
+//       sensorplots://magneto - Opens Magneto VC
+//       sensorplots://accelero - Opens Accelero VC
+//       sensorplots://gps - Opens GPS VC
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+    UITabBarController *mainTbc = (UITabBarController *)self.window.rootViewController;
+    
+    // Basic error checking
+    if (!url && !url.scheme && !url.host) {
+        NSLog(@"OpenURL: Invalid URL");
+        return NO;
+    }
+    
+    // Open the view controller.
+    if ([url.host compare:@"Gps" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        mainTbc.selectedIndex = 3;
+    } else if ([url.host compare:@"Magneto" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        mainTbc.selectedIndex = 2;
+    } else if ([url.host compare:@"Gyro" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        mainTbc.selectedIndex = 1;
+    } else {
+        mainTbc.selectedIndex = 0;
+    }
+    return YES;
 }
 
 #pragma mark - Motion Manager
@@ -86,8 +126,12 @@
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"SensorPlots.sqlite"];
     NSError *error = nil;
+    
+    // Turn automatic Perstistant store migration on.
+    NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES};
+    
     NSString *failureReason = @"There was an error creating or loading the application's saved data.";
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
         // Report any error we got.
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";

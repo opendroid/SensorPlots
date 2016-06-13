@@ -7,6 +7,7 @@
 //
 
 #import "SPTScatterPlotGraph.h"
+#import "SPTConstants.h"
 
 @interface SPTScatterPlotGraph()
 
@@ -33,13 +34,22 @@
     
     // Define plot area frame.
     CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.defaultPlotSpace;
-    plotSpace.xRange = [CPTPlotRange plotRangeWithLocation:@-20.0 length:@220];
+    // kATMinXValueOnGraph=-25
+    // kATxAxisLengthOnScreenDefault=225;
+    NSNumber *xMin = [NSNumber numberWithDouble:kATMinXValueOnGraph];
+    NSNumber *xLen = [NSNumber numberWithDouble:kATxAxisLengthOnScreenDefault];
+    plotSpace.xRange = [CPTPlotRange plotRangeWithLocation:xMin length:xLen];
+    NSNumber *globalLengh = [NSNumber numberWithDouble:kATMaxXLengthOnGraph];
+    plotSpace.globalXRange  = [CPTPlotRange plotRangeWithLocation:@-50.0 length:globalLengh];
     plotSpace.yRange = [CPTPlotRange plotRangeWithLocation:@-1.0 length:@2.0];
+    
+    // Enable scrolling in the map.
+    plotSpace.allowsUserInteraction = YES;
     
     // Set graph title
     CPTMutableTextStyle *titleStyle = [CPTMutableTextStyle textStyle];
     titleStyle.color = [CPTColor brownColor];
-    titleStyle.fontSize = 30.0f;
+    titleStyle.fontSize = 20.0f;
     titleStyle.fontName = @"HelveticaNeue-Bold";
     self.titleTextStyle = titleStyle;
     self.title = title;
@@ -48,6 +58,11 @@
 - (void) setupAxis {
     // Configure Axis lines - green color Axis and style.
     CPTXYAxisSet *axisSet = (CPTXYAxisSet *) self.axisSet;
+    
+    // Setup labeling policy first
+    axisSet.xAxis.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+    axisSet.yAxis.labelingPolicy = CPTAxisLabelingPolicyAutomatic;
+    
     CPTMutableLineStyle *axisLineStyle = [CPTMutableLineStyle lineStyle];
     axisLineStyle.lineWidth = 2.0;
     axisLineStyle.lineColor = [CPTColor colorWithCGColor:[UIColor darkGrayColor].CGColor];
@@ -96,7 +111,7 @@
     CPTMutableTextStyle *axisTextStyle = [CPTMutableTextStyle textStyle];
     axisTextStyle.color = [CPTColor brownColor];
     axisTextStyle.fontSize = 18.0f;
-    axisTextStyle.fontName = @"HelveticaNeue";
+    axisTextStyle.fontName = @"HelveticaNeue-Thin";
     axisSet.xAxis.titleTextStyle = axisTextStyle;
     axisSet.yAxis.titleTextStyle = axisTextStyle;
     axisSet.xAxis.title = @"Sample";
@@ -107,6 +122,34 @@
     axisSet.yAxis.titleLocation = @01;
 }
 
+// Adjust x-axis scroll range
+- (void) adjustXAxisMinValue:(NSNumber *)min length:(NSNumber *) length {
+    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.defaultPlotSpace;
+    plotSpace.globalXRange = [CPTPlotRange plotRangeWithLocation:min length:length];
+}
+
+// Adjust Y-axis scroll range. Adjust bounds so that they stay multiples of
+// yAxis.majorIntervalLength. 
+- (void) adjustYAxisMinValue:(NSNumber *)min length:(NSNumber *) length {
+    
+    // Round of Y to multiple of Axis major interval
+    CPTXYAxisSet *axisSet = (CPTXYAxisSet *) self.axisSet;
+    
+    // Minimum first
+    double yMajorInterval = axisSet.yAxis.majorIntervalLength.doubleValue;
+    double minY = ceilf(fabs(min.doubleValue)/yMajorInterval)*yMajorInterval;
+    if (min.doubleValue < 0.0) minY = -minY;
+    NSNumber *minYGraphLine = [NSNumber numberWithDouble:minY];
+    
+    // Length
+    double lenY = (ceilf(fabs(length.doubleValue)/yMajorInterval) + 1.0) * yMajorInterval;
+    NSNumber *modifiedLength = [NSNumber numberWithDouble:lenY];
+    
+    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.defaultPlotSpace;
+    plotSpace.globalYRange = [CPTPlotRange plotRangeWithLocation:minYGraphLine length:modifiedLength];
+    axisSet.yAxis.titleLocation = [NSNumber numberWithDouble:modifiedLength.floatValue*0.30];
+}
+
 - (void) adjustXAxisRange: (NSNumber *) min length: (NSNumber *) length interval:(NSNumber *)interval ticksPerInterval:(NSUInteger) ticks {
     CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.defaultPlotSpace;
     plotSpace.xRange = [CPTPlotRange plotRangeWithLocation:min length:length];
@@ -115,17 +158,16 @@
     axisSet.xAxis.majorIntervalLength = interval;
     axisSet.xAxis.minorTicksPerInterval = ticks;
     axisSet.xAxis.titleLocation = [NSNumber numberWithDouble:length.floatValue*0.85];
-    
 }
 
 - (void) adjustYAxisRange: (NSNumber *) min length: (NSNumber *) length interval:(NSNumber *)interval ticksPerInterval:(NSUInteger) ticks {
     CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.defaultPlotSpace;
     plotSpace.yRange = [CPTPlotRange plotRangeWithLocation:min length:length];
+    plotSpace.globalYRange  = [CPTPlotRange plotRangeWithLocation:min length:length];
     
     CPTXYAxisSet *axisSet = (CPTXYAxisSet *) self.axisSet;
     axisSet.yAxis.majorIntervalLength = interval;
     axisSet.yAxis.minorTicksPerInterval = ticks;
-    
     axisSet.yAxis.titleLocation = [NSNumber numberWithDouble:length.floatValue*0.30];
 }
 
@@ -140,7 +182,7 @@
     
     // Change Plot line - color and width of scatter plot
     CPTMutableLineStyle *scatterPlotlineStyle = [[CPTMutableLineStyle alloc] init];
-    scatterPlotlineStyle.lineWidth = 4.0f;
+    scatterPlotlineStyle.lineWidth = 2.0f;
     scatterPlotlineStyle.lineColor = [CPTColor colorWithCGColor:lineColor.CGColor];
     scatterPlot.dataLineStyle = scatterPlotlineStyle;
     
@@ -185,7 +227,7 @@
     theLegend.cornerRadius = 10.0;
     // 3 - Add legend to graph
     self.legend = theLegend;
-    // self.legendAnchor = CPTRectAnchorBottomRight;
+    self.legendAnchor = CPTRectAnchorTopRight;
     CGFloat legendWPadding = xPadding;
     CGFloat legendHPadding = yPadding;
     self.legendDisplacement = CGPointMake(legendWPadding, legendHPadding);

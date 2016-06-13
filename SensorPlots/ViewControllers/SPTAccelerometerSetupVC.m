@@ -3,7 +3,7 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/2/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -22,24 +22,49 @@
     [super viewDidLoad];
     
     // Set up the UX
-    self.refreshRateHzUIS.value = self.refreshRateHz.floatValue;
-    self.refreshRateHzUIL.text = [NSString stringWithFormat:@"%3.0f Hz",self.refreshRateHz.floatValue];
-    self.coreDataCountUIL.text = [NSString stringWithFormat:@"%.lu stored data points.",self.countOfTestDataValues.integerValue];
+    [self setupUISlider];
+    self.refreshRateHzUIL.text = [NSString stringWithFormat:@"%d Hz",self.refreshRateHz.intValue];
+    self.coreDataCountUIL.text = [NSString stringWithFormat:@"%.lu stored data points.",(long)self.countOfTestDataValues.integerValue];
 }
 
 - (IBAction)refreshRateHzHandler:(UISlider *)sender {
-    self.refreshRateHzUIL.text = [NSString stringWithFormat:@"%3.0f Hz",self.refreshRateHzUIS.value];
-    
     // Setup the handler.
-    if (self.refreshRateHzUIS.value <= 1.0) {
-        self.refreshRateHzUIS.value = 1.0;
-    } else if (self.refreshRateHzUIS.value >= 100) {
-        self.refreshRateHzUIS.value = 100.0;
+    float value = self.refreshRateHzUIS.value;
+    if (value <= 1.0) {
+        value = 1.0;
+    } else if (value >= 100) {
+        value = 100.0;
     }
     
+    NSNumber *newRefreshRate = [NSNumber numberWithInt:(int)ceilf(value)];
+    self.refreshRateHz = newRefreshRate;
+    self.refreshRateHzUIL.text = [NSString stringWithFormat:@"%d Hz",newRefreshRate.intValue];
+    [self setupUISlider];
+    
     if(self.delegate && [self.delegate respondsToSelector:@selector(receiveAccelerometerRefreshRateHz:)]) {
-        [self.delegate receiveAccelerometerRefreshRateHz:[NSNumber numberWithFloat:self.refreshRateHzUIS.value]];
+        [self.delegate receiveAccelerometerRefreshRateHz:newRefreshRate];
     }
 }
 
+- (void) setupUISlider{
+    // Setup sloder color
+    self.refreshRateHzUIS.value = self.refreshRateHz.intValue;
+    
+    if (self.refreshRateHzUIS.value > 70.0) {
+        UIColor *customRed = [UIColor colorWithRed:0xdf/255.0 green:1.0/255.0 blue:0x3a/255.0 alpha:1.0];
+        self.refreshRateHzUIS.tintColor = customRed;
+        self.refreshRateHzUIS.thumbTintColor = customRed;
+        self.refreshRateHzUIL.textColor = customRed;
+    } else if (self.refreshRateHzUIS.value > 30.0){
+        UIColor *lightBlue = [UIColor colorWithRed:0 green:122.0/255.0 blue:1.0 alpha:1.0];
+        self.refreshRateHzUIS.tintColor = lightBlue;
+        self.refreshRateHzUIS.thumbTintColor = lightBlue;
+        self.refreshRateHzUIL.textColor = lightBlue;
+    } else {
+        UIColor *customGreen = [UIColor colorWithRed:0x31/255 green:0xB4/255.0 blue:0x04/255.0 alpha:1.0];
+        self.refreshRateHzUIS.tintColor = customGreen;
+        self.refreshRateHzUIS.thumbTintColor = customGreen;
+        self.refreshRateHzUIL.textColor = customGreen;
+    }
+}
 @end

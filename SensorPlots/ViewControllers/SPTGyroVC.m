@@ -3,13 +3,17 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/2/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import "SPTGyroVC.h"
-#import "SPTGyroSetupVC.h"
+#import "ATSensorData.h"
 #import "ATGyroMotionManager.h"
 #import "SPTScatterPlotGraph.h"
+#import "SPTGyroSetupVC.h"
+#import "ATSensorData.h"
+#import "SPTConstants.h"
+#import <Google/Analytics.h>
 
 @interface SPTGyroVC() <SPTGyroVCProtocol, MFMailComposeViewControllerDelegate, ATGyroMotionManagerDelegate, CPTPlotDataSource>
 
@@ -28,10 +32,10 @@
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (strong, nonatomic) NSNumber *refreshRateHz; // Test refesh rate in Hz
 @property (strong, nonatomic) NSMutableArray *dataArray; // Data result is here
+@property (strong, nonatomic) id<GAITracker> gaTracker;
 
 // Handy accessor for plaotSpace
 @property (strong, nonatomic) SPTScatterPlotGraph *gyroScatterGraph;
-
 
 @end
 
@@ -48,8 +52,10 @@
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
         self.startStopSensorUIB.enabled = NO;
-        self.displayBoardUIL.text = @"No Gyro available on device.";
+        self.displayBoardUIL.text = @"Gyroscope not available.";
         self.displayBoardUIL.textAlignment = NSTextAlignmentCenter;
+    } else {
+        self.displayBoardUIL.text = @"-";
     }
     
     self.displayBoardUIL.text = @"-";
@@ -64,10 +70,22 @@
                                              selector: @selector(appEnteredBackgroundMode:)
                                                  name: UIApplicationDidEnterBackgroundNotification
                                                object: nil];
+    // set up GA
+    self.gaTracker = [[GAI sharedInstance] defaultTracker];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    // The UA-XXXXX-Y tracker ID is loaded automatically from the
+    // GoogleService-Info.plist by the `GGLContext` in the AppDelegate.
+    // If you're copying this to an app just using Analytics, you'll
+    // need to configure your tracking ID here.
+    // [START screen_view_hit_objc]
+    [self.gaTracker set:kGAIScreenName value:kATGyroVC];
+    [self.gaTracker send:[[GAIDictionaryBuilder createScreenView] build]];
+    // [END screen_view_hit_objc]
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -109,6 +127,10 @@
         self.setupUIB.enabled = NO;
         [self.motionManager startGyroUpdates];
         
+        // Track the event
+        // To determine how many dragons are being rescued, send an event when the
+        // player rescues a dragon.
+        [self.gaTracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Test" action:@"Start" label:@"Gyro" value:@1] build]];
     } else {
         sender.image = [UIImage imageNamed:@"go25x25"];
         [self.motionManager stopGyroUpdates];
@@ -116,8 +138,29 @@
 }
 
 #pragma mark - ATSMotionGyroManagerDelegate handlers
-- (void) didFinishGyroUpdateWithResults: (NSArray *) results {
-    [self.dataArray addObjectsFromArray:results];
+- (void) didFinishGyroUpdateWithResults: (NSArray *) results maxSampleValue:(NSNumber *) max minSampleValue:(NSNumber *) min {
+    // Save in a new Array
+    self.dataArray = [[NSMutableArray alloc] init];
+    
+    // Plot the data new data set - adjust max scroll first
+    if (results.count > kATMaxNumberOfSamples) {
+        // Remove all but last 'kATMaxNumberOfSamplesOnAccelero' potins.
+        // Dont worry the are all saved and you can email them to yourself.
+        NSUInteger idxFrom = results.count - kATMaxNumberOfSamples;
+        for (NSUInteger i = idxFrom; i < results.count; i++) {
+            [self.dataArray addObject:results[i]];
+        }
+    } else { // Get all elements
+        [self.dataArray addObjectsFromArray:results];
+    }
+    
+    // Adjust Y-Axis scroll to show all values
+    double minY = min.doubleValue;
+    if (min.doubleValue > 0) minY = 0.0;
+    NSNumber *length = [NSNumber numberWithDouble:max.doubleValue - minY];
+    [self.gyroScatterGraph adjustYAxisMinValue:min length:length];
+
+    // Reload the data inplotspace
     CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *) self.gyroScatterGraph.defaultPlotSpace;
     [plotSpace.graph reloadData];
 }
@@ -127,7 +170,7 @@
 }
 
 - (void) gyroProgressUpdate: (UInt32) count {
-    self.displayBoardUIL.text = [NSString stringWithFormat:@"%u",count];
+    self.displayBoardUIL.text = [NSString stringWithFormat:@"%u",(unsigned int)count];
 }
 
 - (void) didTrashGyroDataCache {
@@ -140,9 +183,9 @@
     self.trashUIB.enabled = YES;
     self.setupUIB.enabled = YES;
     self.updatesAreInProgress = NO;
+    
     // We may reach here if app was sent to background.
     self.startStopSensorUIB.image = [UIImage imageNamed:@"go25x25"];
-    [self.dataArray removeAllObjects];
 }
 
 #pragma mark - SPTGyroVCProtocol handlers
@@ -167,6 +210,8 @@
             break;
         case MFMailComposeResultSent:
             self.displayBoardUIL.text = @"Data sent in email.";
+            // Capture email notification
+            [self.gaTracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Email" action:@"Sent" label:@"Gyro" value:@1] build]];
             break;
         case MFMailComposeResultFailed:
             self.displayBoardUIL.text = [NSString stringWithFormat:@"Mail sent failure: %@", error.localizedDescription];
@@ -198,9 +243,17 @@
     self.plotAreaGHV.hostedGraph = self.gyroScatterGraph;
 
     // Setup Axis for Gyro
-    [self.gyroScatterGraph adjustXAxisRange:@-20.0 length:@325.0 interval:@25.0 ticksPerInterval:2];
-    [self.gyroScatterGraph adjustYAxisRange:@-20 length:@40 interval:@10.0 ticksPerInterval:1];
+    // Setup x-Axis for Accelero
+    NSNumber *xMin = [NSNumber numberWithDouble:kATxAxisMinimumGyro];
+    NSNumber *xLength = [NSNumber numberWithDouble:kATxAxisLengthOnScreenGyro];
+    NSNumber *xMajor = [NSNumber numberWithDouble:kATxAxisIntervalGyro];
+    [self.gyroScatterGraph adjustXAxisRange:xMin length:xLength interval:xMajor ticksPerInterval:kATxAxisTicksInIntervalGyro];
     
+    // Setup y-Axis for Accelero
+    NSNumber *yMin = [NSNumber numberWithDouble:kATyAxisMinimumGyro];
+    NSNumber *yLength = [NSNumber numberWithDouble:kATyAxisLengthGyro];
+    NSNumber *yMajor = [NSNumber numberWithDouble:kATyAxisIntervalGyro];
+    [self.gyroScatterGraph adjustYAxisRange:yMin length:yLength interval:yMajor ticksPerInterval:kATyAxisTicksInIntervalAccelero];
     
     // Add scatter plot lines for X,Y,Z and RMS.
     [self.gyroScatterGraph addScatterPlotX:self];
@@ -209,33 +262,32 @@
     [self.gyroScatterGraph addScatterPlotAvg:self];
     
     // Add legend after all scatter plots have been added
-    [self.gyroScatterGraph addLegendWithXPadding:-(self.view.bounds.size.width / 20) withYPadding:(self.view.bounds.size.height / 40)];
-    self.gyroScatterGraph.legendAnchor = CPTRectAnchorBottomRight;
-
+    [self.gyroScatterGraph addLegendWithXPadding:-10 withYPadding:-10];
 }
 
 
 #pragma mark - Gyro Graph Data
 
 - (NSUInteger)numberOfRecordsForPlot:(CPTPlot *)plot {
+
     return self.dataArray.count;
 }
 
 - (id)numberForPlot:(CPTPlot *)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)idx {
-    CMGyroData *data = [self.dataArray objectAtIndex:idx];
+    ATSensorData *data = [self.dataArray objectAtIndex:idx];
     switch (fieldEnum) {
         case CPTScatterPlotFieldX:
             return [NSNumber numberWithUnsignedLong:idx];
             
         default: // CPTScatterPlotFieldY values, the identifiers are hardcoded in SPTScatterPlotGraph
             if ([plot.identifier isEqual:@"X"]) {
-                return [NSNumber numberWithDouble:data.rotationRate.x];
+                return [NSNumber numberWithDouble:data.x];
             } else if ([plot.identifier isEqual:@"Y"]) {
-                return [NSNumber numberWithDouble:data.rotationRate.y];
+                return [NSNumber numberWithDouble:data.y];
             } else if ([plot.identifier isEqual:@"Z"]) {
-                return [NSNumber numberWithDouble:data.rotationRate.z];
+                return [NSNumber numberWithDouble:data.z];
             } else if ([plot.identifier isEqual:@"A"]) {
-                double rmsValue = sqrt( (data.rotationRate.x*data.rotationRate.x) + (data.rotationRate.y*data.rotationRate.y) + (data.rotationRate.z*data.rotationRate.z));
+                double rmsValue = sqrt( (data.x * data.x) + (data.y * data.y) + (data.z * data.z));
                 return [NSNumber numberWithDouble:rmsValue];
             } else {
                 return @0;

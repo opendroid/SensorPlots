@@ -3,7 +3,7 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/4/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import <CoreMotion/CoreMotion.h>
@@ -27,7 +27,7 @@
 
 // Start the Gyro tests if it is not already running.
 - (void) startGyroUpdates;
-- (void) startGyroUpdatesWithInterval: (NSNumber *) intervalHzWithDouble;
+- (void) startGyroUpdatesWithInterval:(NSNumber *) intervalHzWithDouble;
 
 // Stop the Gyro updates.
 - (void) stopGyroUpdates;

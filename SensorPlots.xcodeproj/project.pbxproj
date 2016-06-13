@@ -8,10 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		3B480429F38C992D9CD0CFE4 /* libPods-SensorPlots.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8841389BD8F7B0FCBFD7C4B3 /* libPods-SensorPlots.a */; };
+		7405ECF31D0D261400E532E4 /* LocationData+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 7405ECF01D0D261400E532E4 /* LocationData+CoreDataProperties.m */; };
+		7405ECF41D0D261400E532E4 /* LocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7405ECF21D0D261400E532E4 /* LocationData.m */; };
+		740B6EAD1C89C7B600173D3D /* SPTGpsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 740B6EAC1C89C7B600173D3D /* SPTGpsVC.m */; };
+		740B6EB01C89C8D600173D3D /* SPTGpsSetupVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 740B6EAF1C89C8D600173D3D /* SPTGpsSetupVC.m */; };
+		742026811C65E77B00CF262F /* SensorPlots.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7420267F1C65E77B00CF262F /* SensorPlots.xcdatamodeld */; };
+		742D5DA11C66C521005727F9 /* ATSensorData.m in Sources */ = {isa = PBXBuildFile; fileRef = 742D5DA01C66C521005727F9 /* ATSensorData.m */; };
+		742D5DA41C67C8D7005727F9 /* SPTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 742D5DA31C67C8D7005727F9 /* SPTConstants.m */; };
 		743014DA1C6118760039DCA7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 743014D91C6118760039DCA7 /* main.m */; };
 		743014DD1C6118760039DCA7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 743014DC1C6118760039DCA7 /* AppDelegate.m */; };
 		743014E31C6118760039DCA7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 743014E11C6118760039DCA7 /* Main.storyboard */; };
-		743014E61C6118760039DCA7 /* SensorPlots.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 743014E41C6118760039DCA7 /* SensorPlots.xcdatamodeld */; };
 		743014E81C6118760039DCA7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 743014E71C6118760039DCA7 /* Assets.xcassets */; };
 		743014EB1C6118760039DCA7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 743014E91C6118760039DCA7 /* LaunchScreen.storyboard */; };
 		743014F41C612CA40039DCA7 /* SPTAccelerometerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 743014F31C612CA40039DCA7 /* SPTAccelerometerVC.m */; };
@@ -20,7 +26,7 @@
 		7430150D1C6173410039DCA7 /* AccelerometerData+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 7430150A1C6173410039DCA7 /* AccelerometerData+CoreDataProperties.m */; };
 		7430150E1C6173410039DCA7 /* AccelerometerData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7430150C1C6173410039DCA7 /* AccelerometerData.m */; };
 		743015141C6190E20039DCA7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 743015131C6190E20039DCA7 /* MessageUI.framework */; };
-		743015171C61CEE10039DCA7 /* NSDate+BootTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 743015161C61CEE10039DCA7 /* NSDate+BootTime.m */; };
+		745A636F1D0DC2A8002CBCAD /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 745A636E1D0DC2A8002CBCAD /* MapKit.framework */; };
 		746C56361C625337005984E2 /* ATAccelerometerMotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 746C56351C625337005984E2 /* ATAccelerometerMotionManager.m */; };
 		746DD2FE1C63CD8700200320 /* ATGyroMotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD2FD1C63CD8700200320 /* ATGyroMotionManager.m */; };
 		746DD3091C63E28500200320 /* GyroData+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3021C63E28500200320 /* GyroData+CoreDataProperties.m */; };
@@ -33,15 +39,30 @@
 		746DD3191C64076400200320 /* SPTMagnetoSetupVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD3181C64076400200320 /* SPTMagnetoSetupVC.m */; };
 		746DD31C1C642CC000200320 /* SPTScatterPlotGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD31B1C642CC000200320 /* SPTScatterPlotGraph.m */; };
 		746DD31F1C6486F500200320 /* ATOUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 746DD31E1C6486F500200320 /* ATOUtilities.m */; };
+		749A38711C6567C70061FF91 /* SPTAcclerometerRecordVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 749A38701C6567C70061FF91 /* SPTAcclerometerRecordVC.m */; };
+		74AF85E71C69B5D900002B5F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 74AF85E61C69B5D900002B5F /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7405ECE21D0CE78E00E532E4 /* SensorPlots 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SensorPlots 2.xcdatamodel"; sourceTree = "<group>"; };
+		7405ECEF1D0D261400E532E4 /* LocationData+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "LocationData+CoreDataProperties.h"; path = "SensorPlots/CoreData/LocationData+CoreDataProperties.h"; sourceTree = "<group>"; };
+		7405ECF01D0D261400E532E4 /* LocationData+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "LocationData+CoreDataProperties.m"; path = "SensorPlots/CoreData/LocationData+CoreDataProperties.m"; sourceTree = "<group>"; };
+		7405ECF11D0D261400E532E4 /* LocationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationData.h; path = SensorPlots/CoreData/LocationData.h; sourceTree = "<group>"; };
+		7405ECF21D0D261400E532E4 /* LocationData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationData.m; path = SensorPlots/CoreData/LocationData.m; sourceTree = "<group>"; };
+		740B6EAB1C89C7B600173D3D /* SPTGpsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTGpsVC.h; path = ViewControllers/SPTGpsVC.h; sourceTree = "<group>"; };
+		740B6EAC1C89C7B600173D3D /* SPTGpsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTGpsVC.m; path = ViewControllers/SPTGpsVC.m; sourceTree = "<group>"; };
+		740B6EAE1C89C8D600173D3D /* SPTGpsSetupVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTGpsSetupVC.h; path = ViewControllers/SPTGpsSetupVC.h; sourceTree = "<group>"; };
+		740B6EAF1C89C8D600173D3D /* SPTGpsSetupVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTGpsSetupVC.m; path = ViewControllers/SPTGpsSetupVC.m; sourceTree = "<group>"; };
+		742026801C65E77B00CF262F /* SensorPlots.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SensorPlots.xcdatamodel; sourceTree = "<group>"; };
+		742D5D9F1C66C521005727F9 /* ATSensorData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATSensorData.h; path = SensorModels/ATSensorData.h; sourceTree = "<group>"; };
+		742D5DA01C66C521005727F9 /* ATSensorData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATSensorData.m; path = SensorModels/ATSensorData.m; sourceTree = "<group>"; };
+		742D5DA21C67C8D7005727F9 /* SPTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTConstants.h; path = Utilities/SPTConstants.h; sourceTree = "<group>"; };
+		742D5DA31C67C8D7005727F9 /* SPTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTConstants.m; path = Utilities/SPTConstants.m; sourceTree = "<group>"; };
 		743014D51C6118760039DCA7 /* SensorPlots.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SensorPlots.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		743014D91C6118760039DCA7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		743014DB1C6118760039DCA7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		743014DC1C6118760039DCA7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		743014E21C6118760039DCA7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		743014E51C6118760039DCA7 /* SensorPlots.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SensorPlots.xcdatamodel; sourceTree = "<group>"; };
 		743014E71C6118760039DCA7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		743014EA1C6118760039DCA7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		743014EC1C6118760039DCA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -56,8 +77,7 @@
 		7430150B1C6173410039DCA7 /* AccelerometerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelerometerData.h; path = SensorPlots/CoreData/AccelerometerData.h; sourceTree = "<group>"; };
 		7430150C1C6173410039DCA7 /* AccelerometerData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AccelerometerData.m; path = SensorPlots/CoreData/AccelerometerData.m; sourceTree = "<group>"; };
 		743015131C6190E20039DCA7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		743015151C61CEE10039DCA7 /* NSDate+BootTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDate+BootTime.h"; path = "Utilities/NSDate+BootTime.h"; sourceTree = "<group>"; };
-		743015161C61CEE10039DCA7 /* NSDate+BootTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDate+BootTime.m"; path = "Utilities/NSDate+BootTime.m"; sourceTree = "<group>"; };
+		745A636E1D0DC2A8002CBCAD /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		746C56341C625337005984E2 /* ATAccelerometerMotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATAccelerometerMotionManager.h; path = SensorModels/ATAccelerometerMotionManager.h; sourceTree = "<group>"; };
 		746C56351C625337005984E2 /* ATAccelerometerMotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATAccelerometerMotionManager.m; path = SensorModels/ATAccelerometerMotionManager.m; sourceTree = "<group>"; };
 		746C56371C625722005984E2 /* ATSMotionAccelerometerManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATSMotionAccelerometerManagerDelegate.h; sourceTree = "<group>"; };
@@ -85,6 +105,9 @@
 		746DD31B1C642CC000200320 /* SPTScatterPlotGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTScatterPlotGraph.m; path = Utilities/SPTScatterPlotGraph.m; sourceTree = "<group>"; };
 		746DD31D1C6486F500200320 /* ATOUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATOUtilities.h; path = Utilities/ATOUtilities.h; sourceTree = "<group>"; };
 		746DD31E1C6486F500200320 /* ATOUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATOUtilities.m; path = Utilities/ATOUtilities.m; sourceTree = "<group>"; };
+		749A386F1C6567C70061FF91 /* SPTAcclerometerRecordVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPTAcclerometerRecordVC.h; path = ViewControllers/SPTAcclerometerRecordVC.h; sourceTree = "<group>"; };
+		749A38701C6567C70061FF91 /* SPTAcclerometerRecordVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPTAcclerometerRecordVC.m; path = ViewControllers/SPTAcclerometerRecordVC.m; sourceTree = "<group>"; };
+		74AF85E61C69B5D900002B5F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8841389BD8F7B0FCBFD7C4B3 /* libPods-SensorPlots.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SensorPlots.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		95E5A7E6203FCC6E5692886B /* Pods-SensorPlots.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SensorPlots.release.xcconfig"; path = "Pods/Target Support Files/Pods-SensorPlots/Pods-SensorPlots.release.xcconfig"; sourceTree = "<group>"; };
 		9BF3B0E02958C624F3223C3F /* Pods-SensorPlots.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SensorPlots.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SensorPlots/Pods-SensorPlots.debug.xcconfig"; sourceTree = "<group>"; };
@@ -96,6 +119,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				743015141C6190E20039DCA7 /* MessageUI.framework in Frameworks */,
+				745A636F1D0DC2A8002CBCAD /* MapKit.framework in Frameworks */,
 				3B480429F38C992D9CD0CFE4 /* libPods-SensorPlots.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,10 +155,11 @@
 				743015001C6172A80039DCA7 /* CoreData */,
 				743014F51C612CAB0039DCA7 /* VC */,
 				743014E11C6118760039DCA7 /* Main.storyboard */,
-				743014E71C6118760039DCA7 /* Assets.xcassets */,
 				743014E91C6118760039DCA7 /* LaunchScreen.storyboard */,
+				743014E71C6118760039DCA7 /* Assets.xcassets */,
+				7420267F1C65E77B00CF262F /* SensorPlots.xcdatamodeld */,
 				743014EC1C6118760039DCA7 /* Info.plist */,
-				743014E41C6118760039DCA7 /* SensorPlots.xcdatamodeld */,
+				74AF85E61C69B5D900002B5F /* GoogleService-Info.plist */,
 				743014D81C6118760039DCA7 /* Supporting Files */,
 			);
 			path = SensorPlots;
@@ -155,6 +180,8 @@
 				743014F31C612CA40039DCA7 /* SPTAccelerometerVC.m */,
 				743014F61C612CDE0039DCA7 /* SPTAccelerometerSetupVC.h */,
 				743014F71C612CDE0039DCA7 /* SPTAccelerometerSetupVC.m */,
+				749A386F1C6567C70061FF91 /* SPTAcclerometerRecordVC.h */,
+				749A38701C6567C70061FF91 /* SPTAcclerometerRecordVC.m */,
 				743014F91C612D0A0039DCA7 /* SPTGyroVC.h */,
 				743014FA1C612D0A0039DCA7 /* SPTGyroVC.m */,
 				746DD3141C64048300200320 /* SPTGyroSetupVC.h */,
@@ -163,6 +190,10 @@
 				746DD3121C63FA8C00200320 /* SPTMagnetoVC.m */,
 				746DD3171C64076400200320 /* SPTMagnetoSetupVC.h */,
 				746DD3181C64076400200320 /* SPTMagnetoSetupVC.m */,
+				740B6EAB1C89C7B600173D3D /* SPTGpsVC.h */,
+				740B6EAC1C89C7B600173D3D /* SPTGpsVC.m */,
+				740B6EAE1C89C8D600173D3D /* SPTGpsSetupVC.h */,
+				740B6EAF1C89C8D600173D3D /* SPTGpsSetupVC.m */,
 			);
 			name = VC;
 			sourceTree = "<group>";
@@ -170,6 +201,10 @@
 		743015001C6172A80039DCA7 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				7405ECEF1D0D261400E532E4 /* LocationData+CoreDataProperties.h */,
+				7405ECF01D0D261400E532E4 /* LocationData+CoreDataProperties.m */,
+				7405ECF11D0D261400E532E4 /* LocationData.h */,
+				7405ECF21D0D261400E532E4 /* LocationData.m */,
 				746DD3011C63E28500200320 /* GyroData+CoreDataProperties.h */,
 				746DD3021C63E28500200320 /* GyroData+CoreDataProperties.m */,
 				746DD3031C63E28500200320 /* GyroData.h */,
@@ -190,12 +225,12 @@
 		7430150F1C6190740039DCA7 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				743015151C61CEE10039DCA7 /* NSDate+BootTime.h */,
-				743015161C61CEE10039DCA7 /* NSDate+BootTime.m */,
 				746DD31A1C642CC000200320 /* SPTScatterPlotGraph.h */,
 				746DD31B1C642CC000200320 /* SPTScatterPlotGraph.m */,
 				746DD31D1C6486F500200320 /* ATOUtilities.h */,
 				746DD31E1C6486F500200320 /* ATOUtilities.m */,
+				742D5DA21C67C8D7005727F9 /* SPTConstants.h */,
+				742D5DA31C67C8D7005727F9 /* SPTConstants.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -212,6 +247,8 @@
 				746DD2FD1C63CD8700200320 /* ATGyroMotionManager.m */,
 				746DD30D1C63E5B500200320 /* ATMagnetoMotionManager.h */,
 				746DD30E1C63E5B500200320 /* ATMagnetoMotionManager.m */,
+				742D5D9F1C66C521005727F9 /* ATSensorData.h */,
+				742D5DA01C66C521005727F9 /* ATSensorData.m */,
 			);
 			name = SensorModels;
 			sourceTree = "<group>";
@@ -228,6 +265,7 @@
 		F144D997ECCF524F931C07AE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				745A636E1D0DC2A8002CBCAD /* MapKit.framework */,
 				743015131C6190E20039DCA7 /* MessageUI.framework */,
 				8841389BD8F7B0FCBFD7C4B3 /* libPods-SensorPlots.a */,
 			);
@@ -264,10 +302,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0720;
-				ORGANIZATIONNAME = "Ajay Thaur";
+				ORGANIZATIONNAME = "Ajay Thakur";
 				TargetAttributes = {
 					743014D41C6118760039DCA7 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 489DFKYAU5;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -295,6 +339,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				743014EB1C6118760039DCA7 /* LaunchScreen.storyboard in Resources */,
+				74AF85E71C69B5D900002B5F /* GoogleService-Info.plist in Resources */,
 				743014E81C6118760039DCA7 /* Assets.xcassets in Resources */,
 				743014E31C6118760039DCA7 /* Main.storyboard in Resources */,
 			);
@@ -356,24 +401,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				746DD31F1C6486F500200320 /* ATOUtilities.m in Sources */,
-				743014E61C6118760039DCA7 /* SensorPlots.xcdatamodeld in Sources */,
 				746DD30A1C63E28500200320 /* GyroData.m in Sources */,
+				749A38711C6567C70061FF91 /* SPTAcclerometerRecordVC.m in Sources */,
 				746DD31C1C642CC000200320 /* SPTScatterPlotGraph.m in Sources */,
 				746DD30B1C63E28500200320 /* MagnetoData+CoreDataProperties.m in Sources */,
 				746DD3161C64048300200320 /* SPTGyroSetupVC.m in Sources */,
 				746DD3191C64076400200320 /* SPTMagnetoSetupVC.m in Sources */,
 				743014DD1C6118760039DCA7 /* AppDelegate.m in Sources */,
 				746DD30F1C63E5B500200320 /* ATMagnetoMotionManager.m in Sources */,
+				7405ECF41D0D261400E532E4 /* LocationData.m in Sources */,
+				740B6EB01C89C8D600173D3D /* SPTGpsSetupVC.m in Sources */,
 				746DD2FE1C63CD8700200320 /* ATGyroMotionManager.m in Sources */,
+				742026811C65E77B00CF262F /* SensorPlots.xcdatamodeld in Sources */,
 				746C56361C625337005984E2 /* ATAccelerometerMotionManager.m in Sources */,
 				746DD3131C63FA8C00200320 /* SPTMagnetoVC.m in Sources */,
 				743014F41C612CA40039DCA7 /* SPTAccelerometerVC.m in Sources */,
 				7430150E1C6173410039DCA7 /* AccelerometerData.m in Sources */,
+				7405ECF31D0D261400E532E4 /* LocationData+CoreDataProperties.m in Sources */,
+				740B6EAD1C89C7B600173D3D /* SPTGpsVC.m in Sources */,
 				743014FB1C612D0A0039DCA7 /* SPTGyroVC.m in Sources */,
 				746DD30C1C63E28500200320 /* MagnetoData.m in Sources */,
 				743014DA1C6118760039DCA7 /* main.m in Sources */,
-				743015171C61CEE10039DCA7 /* NSDate+BootTime.m in Sources */,
+				742D5DA11C66C521005727F9 /* ATSensorData.m in Sources */,
 				743014F81C612CDE0039DCA7 /* SPTAccelerometerSetupVC.m in Sources */,
+				742D5DA41C67C8D7005727F9 /* SPTConstants.m in Sources */,
 				746DD3091C63E28500200320 /* GyroData+CoreDataProperties.m in Sources */,
 				7430150D1C6173410039DCA7 /* AccelerometerData+CoreDataProperties.m in Sources */,
 			);
@@ -418,7 +469,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -462,7 +514,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -488,14 +541,17 @@
 			baseConfigurationReference = 9BF3B0E02958C624F3223C3F /* Pods-SensorPlots.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CorePlot\"/**",
 				);
 				INFOPLIST_FILE = SensorPlots/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.psv.apps.ios.SensorPlots;
+				PRODUCT_BUNDLE_IDENTIFIER = com.psv.apps.ios.sensorplots;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -505,14 +561,17 @@
 			baseConfigurationReference = 95E5A7E6203FCC6E5692886B /* Pods-SensorPlots.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
 					"\"${PODS_ROOT}/Headers/Public/CorePlot\"/**",
 				);
 				INFOPLIST_FILE = SensorPlots/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.psv.apps.ios.SensorPlots;
+				PRODUCT_BUNDLE_IDENTIFIER = com.psv.apps.ios.sensorplots;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -541,12 +600,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		743014E41C6118760039DCA7 /* SensorPlots.xcdatamodeld */ = {
+		7420267F1C65E77B00CF262F /* SensorPlots.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				743014E51C6118760039DCA7 /* SensorPlots.xcdatamodel */,
+				7405ECE21D0CE78E00E532E4 /* SensorPlots 2.xcdatamodel */,
+				742026801C65E77B00CF262F /* SensorPlots.xcdatamodel */,
 			);
-			currentVersion = 743014E51C6118760039DCA7 /* SensorPlots.xcdatamodel */;
+			currentVersion = 742026801C65E77B00CF262F /* SensorPlots.xcdatamodel */;
 			path = SensorPlots.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

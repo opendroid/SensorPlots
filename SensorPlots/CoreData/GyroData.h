@@ -3,7 +3,7 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/4/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

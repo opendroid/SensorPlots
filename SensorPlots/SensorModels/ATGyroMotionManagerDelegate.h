@@ -3,7 +3,7 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/4/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -13,7 +13,7 @@
 // Informs results and status from 'ATMotionGyroManager'
 @required
 // Called when test results are ready
-- (void) didFinishGyroUpdateWithResults: (NSArray *) results;
+- (void) didFinishGyroUpdateWithResults:(NSArray *) results maxSampleValue:(NSNumber *) max minSampleValue:(NSNumber *) min;
 
 @optional
 // A single method that calls with all errors.

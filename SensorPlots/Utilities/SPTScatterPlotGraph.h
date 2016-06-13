@@ -16,6 +16,8 @@
 // Call after initilization to change the axis
 - (void) adjustXAxisRange: (NSNumber *) min length: (NSNumber *) length interval:(NSNumber *)interval ticksPerInterval:(NSUInteger) ticks;
 - (void) adjustYAxisRange: (NSNumber *) min length: (NSNumber *) length interval:(NSNumber *)interval ticksPerInterval:(NSUInteger) ticks;
+- (void) adjustXAxisMinValue:(NSNumber *)min length:(NSNumber *) length;
+- (void) adjustYAxisMinValue:(NSNumber *)min length:(NSNumber *) length;
 
 
 // Convinient setup for X,Y,Z, RMS scatter plot

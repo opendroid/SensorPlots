@@ -3,11 +3,10 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/4/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import "GyroData.h"
-#import "NSDate+BootTime.h"
 
 @implementation GyroData
 
@@ -26,8 +25,8 @@
 }
 
 - (NSDate *) timestamp {
-    NSDate *bootTime = [NSDate bootTime];
-    NSDate *sampleTime = [NSDate dateWithTimeInterval:self.timeInterval.doubleValue sinceDate:bootTime];
+    NSTimeInterval sampleTimeInPast = self.timeInterval.doubleValue - [[NSProcessInfo processInfo] systemUptime];
+    NSDate *sampleTime = [NSDate dateWithTimeIntervalSinceNow:sampleTimeInPast];
     return sampleTime;
 }
 

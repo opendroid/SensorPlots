@@ -3,22 +3,26 @@
 //  SensorPlots
 //
 //  Created by Ajay Thakur on 2/3/16.
-//  Copyright © 2016 Ajay Thaur. All rights reserved.
+//  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
 #import "ATAccelerometerMotionManager.h"
 #import "AppDelegate.h"
 #import "AccelerometerData.h"
 #import "ATOUtilities.h"
+#import "ATSensorData.h"
+#import "SPTConstants.h"
 
 @interface ATAccelerometerMotionManager()
 
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (strong, nonatomic) NSMutableArray *dataArray; // Values of accelerometer are saved here.
+@property (strong, nonatomic) NSMutableArray *incomingDataArray; // Incoming data from IOS
+@property (strong, nonatomic) NSMutableArray *outgoingDataArray; // Data sent to View Controller
 @property (strong, nonatomic) AppDelegate *appDelegate;
 
-@property (atomic) BOOL accelerometerUpdatesInProgress;
+@property (atomic) BOOL accelerometerStartedByUser;
+@property (atomic) __block BOOL accelerometerStoppedByUser; // Checked in block.
 @property (atomic) UInt32 realTimeCountOfAcclerometerDataPoints;
 
 @end
@@ -38,12 +42,12 @@
             }
         }
         self.managedObjectContext = self.appDelegate.managedObjectContext;
-        self.dataArray = [[NSMutableArray alloc] init];
     }
-    if ((!self.motionManager) || (!self.managedObjectContext) || (!self.dataArray) ) {
+    if ((!self.motionManager) || (!self.managedObjectContext)) {
         return nil; // Initilization failed.
     }
-    self.accelerometerUpdatesInProgress = NO;
+    self.accelerometerStartedByUser = NO;
+    self.accelerometerStoppedByUser = NO;
     return self;
 }
 
@@ -84,14 +88,28 @@
 }
 
 - (void) startAccelerometerUpdates {
+    
+    if(self.accelerometerStartedByUser) {
+        // Inform the error
+        if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey:@"Accelero updates in progress.",
+                                        NSLocalizedFailureReasonErrorKey: @"Error starting update.",
+                                        NSLocalizedRecoveryOptionsErrorKey:@"Try stopping the updates first."
+                                        };
+            NSError *error = [NSError errorWithDomain:@"ATAccelerometerMotionManager" code:100 userInfo:userInfo];
+            [self.delegate accelerometerError:error];
+            return;
+        }
+    }
+    
     if (!self.motionManager.isAccelerometerAvailable) {
         // Inform the error
         if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey:@"Accelerometer not avaliable.",
                                         NSLocalizedFailureReasonErrorKey: @"Accelerometer not avaliable.",
-                                        NSLocalizedRecoveryOptionsErrorKey:@"Try on real device"
+                                        NSLocalizedRecoveryOptionsErrorKey:@"Try on device that has accelerometer"
                                         };
-            NSError *error = [NSError errorWithDomain:@"ATAccelerometerMotionManager" code:100 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:@"ATAccelerometerMotionManager" code:101 userInfo:userInfo];
             [self.delegate accelerometerError:error];
         }
         return;
@@ -101,37 +119,40 @@
         [self.delegate willStartAccelerometerUpdate];
     }
     
-    if(self.accelerometerUpdatesInProgress) {
-        // Inform the error
-        if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey:@"Test in already in progress.",
-                                        NSLocalizedFailureReasonErrorKey: @"Test in progress.",
-                                        NSLocalizedRecoveryOptionsErrorKey:@"Try stopping the test."
-                                        };
-            NSError *error = [NSError errorWithDomain:@"ATAccelerometerMotionManager" code:101 userInfo:userInfo];
-            [self.delegate accelerometerError:error];
-            return;
-        }
-    }
-    
     // Fetch the values and save them
     self.realTimeCountOfAcclerometerDataPoints = 0;
-    [self.dataArray removeAllObjects]; // Remove old data
-    self.accelerometerUpdatesInProgress = YES;
+    self.incomingDataArray = [[NSMutableArray alloc] init];
+    self.accelerometerStartedByUser = YES;
+    
     NSOperationQueue *opsQueue = [[NSOperationQueue alloc] init];
     opsQueue.name = @"SPTAccelerator";
     // relatively higher QoS but lower than User interation so they can stop the updates
     opsQueue.qualityOfService = NSQualityOfServiceUserInitiated;
     self.motionManager.accelerometerUpdateInterval = 1.0 / self.refreshRateHz.floatValue;
+    
+    // Start the updates in a different thread
     [self.motionManager startAccelerometerUpdatesToQueue:opsQueue withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
-        if (error || !self.accelerometerUpdatesInProgress){
-            return; // Dont save data after test is stopped
+        if (error || !accelerometerData || self.accelerometerStoppedByUser){
+            return; // Dont save data until last stop has taken into affect
         }
         // Save it in memory array
-        [self.dataArray addObject:accelerometerData];
+        @try {
+            ATSensorData *data = [[ATSensorData alloc] initWithUpdateX:accelerometerData.acceleration.x Y:accelerometerData.acceleration.y Z:accelerometerData.acceleration.z timeInterval:accelerometerData.timestamp];
+            if (data) {
+                [self.incomingDataArray addObject:data];
+            }
+            if (self.incomingDataArray.count > kATIncomingQMaxCount) {
+                NSMutableArray *saveArray = self.incomingDataArray;
+                self.incomingDataArray = [[NSMutableArray alloc] init];
+                [self saveAccelerometerDataToCoreDataFromArray:saveArray];
+            }
+        } @catch (NSException *exception) {
+            NSLog(@"Accelerometer Exception: %@", exception.debugDescription); // put breakpoint here
+        }
         
         // Update delegate that another data has arrived:
         self.realTimeCountOfAcclerometerDataPoints++;
+        
         // Protocol - update with test progress
         if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerProgressUpdate:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -146,15 +167,16 @@
     return;
 }
 
-
 - (void) startAccelerometerUpdatesWithInterval: (NSNumber *) intervalHzWithDouble {
     self.refreshRateHz = [self accelerometerUpdateInterval:intervalHzWithDouble];
     [self startAccelerometerUpdates];
 }
 
 - (void) stopAccelerometerUpdates {
+    [self.motionManager stopAccelerometerUpdates];
+    
     // Check if test was running
-    if(!self.accelerometerUpdatesInProgress) {
+    if(!self.accelerometerStartedByUser) {
         // Inform the iser of error
         if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey:@"Test is not progress.",
@@ -168,27 +190,52 @@
     }
     
     // Stop the test.
-    self.accelerometerUpdatesInProgress = NO;
-    [self.motionManager stopAccelerometerUpdates];
+    self.outgoingDataArray = self.incomingDataArray;
+    self.accelerometerStartedByUser = NO;
+    self.accelerometerStoppedByUser = YES;
     
     // Protocol - did stop the test
     if (self.delegate && [self.delegate respondsToSelector:@selector(didStopAccelerometerUpdate)]) {
         [self.delegate didStopAccelerometerUpdate];
     }
-
-    // save data to CoreData
-    [self saveAccelerometerDataToCoreData];
     
-    // Pass on the results
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didFinishAccelerometerUpdateWithResults:)]) {
-        [self.delegate didFinishAccelerometerUpdateWithResults:self.dataArray];
-    }
+    [self processResultsInSeparateThread];
 }
 
+- (void) processResultsInSeparateThread {
+    dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0ul);
+    dispatch_async(queue, ^{
+        // Save data in CoreData - thread safe.
+        [self saveAccelerometerDataToCoreData];
+        
+        // Calculate Max and Min Y
+        double maxSampleValue = 0.0, minSampleValue = 0.0;
+        for (ATSensorData *d in self.outgoingDataArray) {
+            double rms = sqrt((d.x * d.x) + (d.y * d.y) + (d.z * d.z));
+            if (maxSampleValue < rms) maxSampleValue = rms;
+            if (minSampleValue > d.x) minSampleValue = d.x;
+            if (minSampleValue > d.y) minSampleValue = d.y;
+            if (minSampleValue > d.z) minSampleValue = d.z;
+        }
+        
+        NSNumber *maxSampleV = [NSNumber numberWithDouble:maxSampleValue];
+        NSNumber *minSampleV = [NSNumber numberWithDouble:minSampleValue];
+        
+        // Update delegate in main thread. So they can do UX operations
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didFinishAccelerometerUpdateWithResults:maxSampleValue:minSampleValue:)]) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self.delegate didFinishAccelerometerUpdateWithResults:self.outgoingDataArray maxSampleValue:maxSampleV minSampleValue:minSampleV];
+                self.accelerometerStoppedByUser = NO;
+            });
+        } else {
+            self.accelerometerStoppedByUser = NO;
+        }
+    });
+}
 
 - (MFMailComposeViewController *) emailComposerWithAccelerometerData {
     //Get a file name to write the data to using the documents directory:
-    NSString *fileName = [ATOUtilities createDataFilePathForName:@"Accelerometer.csv"];
+    NSString *fileName = [ATOUtilities createDataFilePathForName:kATCSVDataFilenameAccelero];
     
     // Read contents from CoreData table and store in a NSMutableString
     NSMutableString *coreDataString = [[NSMutableString alloc] init];
@@ -197,11 +244,11 @@
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timeInterval" ascending:NO]];
     NSError *fetchError;
     NSArray *results = [self.managedObjectContext executeFetchRequest:fetchRequest error:&fetchError];
-    [coreDataString appendString:@"x_times_g,y_times_g,z_times_g,g_measured,TimeInterval,Date\n"];
+    [coreDataString appendString:@"x_times_g,y_times_g,z_times_g,g_measured,TimeInterval,Date_approximate\n"];
     
     // Extract the data
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS Z";
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSSSSS Z";
     for (AccelerometerData *d in results) {
         NSString *dateTime = [formatter stringFromDate:d.timestamp];
         NSString *rowData = [NSString stringWithFormat:@"%f,%f,%f,%f,%f,%@\n", d.x.doubleValue, d.y.doubleValue, d.z.doubleValue, d.avgValue.doubleValue, d.timeInterval.doubleValue, dateTime];
@@ -212,16 +259,10 @@
     [coreDataString writeToFile:fileName  atomically:YES  encoding:NSUTF8StringEncoding error:nil];
     NSData *fileData = [NSData dataWithContentsOfFile:fileName];
     
-    // Create the Email message with attachment and compose a viewer
-    NSString *emailTitle = @"PlutoApps: Your accelerometer test data"; // Email Subject
-    NSString *messageBody = @"Your data is in attached file  Accelerometer.csv. The units are"
-            " in multiples of earth's gravity. So x = 2 G means x is twice G."
-            " The data are sorted by timestamp in decending order."
-            " If you have questions email me at plutoapps@outlook.com\n"; // Email Content
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-    [mc setSubject:emailTitle];
-    [mc setMessageBody:messageBody isHTML:NO];
-    [mc addAttachmentData:fileData mimeType:@"text/csv" fileName:@"accelerometer.csv"];
+    [mc setSubject:kATEmailSubjectAccelero];
+    [mc setMessageBody:kATEmailBodyAccelero isHTML:NO];
+    [mc addAttachmentData:fileData mimeType:@"text/csv" fileName:kATCSVDataFilenameAccelero];
     
     return mc;
 }
@@ -258,14 +299,11 @@
     }
 
     // 2. Clear .csv file if created for email purposes
-    NSString *fileNameWithPath = [ATOUtilities createDataFilePathForName:@"Accelerometer.csv"];
+    NSString *fileNameWithPath = [ATOUtilities createDataFilePathForName:kATCSVDataFilenameAccelero];
     [[NSFileManager defaultManager] removeItemAtPath:fileNameWithPath error:&deleteError];
     if (deleteError && self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
         [self.delegate accelerometerError:deleteError];
     }
-    
-    // 3. Clear Memory
-    [self.dataArray removeAllObjects];
     
     // Protocol - completed trashing the data
     if (self.delegate && [self.delegate respondsToSelector:@selector(didTrashAccelerometerDataCache)]) {
@@ -276,21 +314,29 @@
 #pragma mark - Core Data Table
 - (void) saveAccelerometerDataToCoreData {
     
-    for (CMAccelerometerData *d in self.dataArray) {
-        AccelerometerData *data = [NSEntityDescription insertNewObjectForEntityForName:@"AccelerometerData" inManagedObjectContext:self.managedObjectContext];
-        data.x = [NSNumber numberWithDouble:d.acceleration.x];
-        data.y = [NSNumber numberWithDouble:d.acceleration.y];
-        data.z = [NSNumber numberWithDouble:d.acceleration.z];
-        data.timeInterval = [NSNumber numberWithDouble:d.timestamp]; // Time since last phone bootup.
-    }
+    [self saveAccelerometerDataToCoreDataFromArray:self.outgoingDataArray];
+}
+
+- (void) saveAccelerometerDataToCoreDataFromArray: (NSMutableArray *) incomingArray {
     
-    NSError *error;
-    BOOL isSaved = [self.managedObjectContext save:&error];
-    if (!isSaved) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
-            [self.delegate accelerometerError:error];
+    [self.managedObjectContext performBlock:^{
+        for (ATSensorData *d in incomingArray) {
+            AccelerometerData *data = [NSEntityDescription insertNewObjectForEntityForName:@"AccelerometerData" inManagedObjectContext:self.managedObjectContext];
+            data.x = [NSNumber numberWithDouble:d.x];
+            data.y = [NSNumber numberWithDouble:d.y];
+            data.z = [NSNumber numberWithDouble:d.z];
+            data.timeInterval = [NSNumber numberWithDouble:d.timestamp]; // Time since last phone bootup.
         }
-    }
+        __block NSError *error;
+        BOOL isSaved = [self.managedObjectContext save:&error];
+        if (!isSaved) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self.delegate accelerometerError:error];
+                });
+            }
+        }
+    }];
 }
 
 @end

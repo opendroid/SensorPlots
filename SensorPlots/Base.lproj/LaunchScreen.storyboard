@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="3ZF-Ak-gpQ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="3ZF-Ak-gpQ">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -17,15 +17,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circuit25x25" translatesAutoresizingMaskIntoConstraints="NO" id="IHe-rX-KIH">
-                                <rect key="frame" x="288" y="287" width="25" height="25"/>
-                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="plutoapps@outlook.com" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U5N-nt-J8r">
+                                <rect key="frame" x="181" y="339" width="239.5" height="25.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="21"/>
+                                <color key="textColor" red="0.18823529410000001" green="0.2666666667" blue="0.61960784310000006" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensor Plot" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ib9-aC-nsD">
+                                <rect key="frame" x="195" y="276" width="211" height="48"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="40"/>
+                                <color key="textColor" red="0.18823529410000001" green="0.2666666667" blue="0.61960784310000006" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <accessibility key="accessibilityConfiguration">
+                            <accessibilityTraits key="traits" notEnabled="YES"/>
+                        </accessibility>
                         <constraints>
-                            <constraint firstItem="IHe-rX-KIH" firstAttribute="centerX" secondItem="gE0-Fh-Bq5" secondAttribute="centerX" id="0zy-T5-Dn7"/>
-                            <constraint firstItem="IHe-rX-KIH" firstAttribute="centerY" secondItem="gE0-Fh-Bq5" secondAttribute="centerY" id="XXX-kn-d8H"/>
+                            <constraint firstItem="Ib9-aC-nsD" firstAttribute="centerX" secondItem="gE0-Fh-Bq5" secondAttribute="centerX" id="44L-he-hy9"/>
+                            <constraint firstItem="U5N-nt-J8r" firstAttribute="top" secondItem="Ib9-aC-nsD" secondAttribute="bottom" constant="15" id="HOb-7a-riy"/>
+                            <constraint firstItem="U5N-nt-J8r" firstAttribute="centerX" secondItem="Ib9-aC-nsD" secondAttribute="centerX" id="JP5-4e-TPe"/>
+                            <constraint firstItem="Ib9-aC-nsD" firstAttribute="centerY" secondItem="gE0-Fh-Bq5" secondAttribute="centerY" id="MKC-5E-vWb"/>
+                            <constraint firstItem="Ib9-aC-nsD" firstAttribute="centerY" secondItem="gE0-Fh-Bq5" secondAttribute="centerY" id="shr-oD-N3x"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="MKC-5E-vWb"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular">
+                            <mask key="constraints">
+                                <include reference="MKC-5E-vWb"/>
+                            </mask>
+                        </variation>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WFG-75-HVS" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -33,7 +58,4 @@
             <point key="canvasLocation" x="1931" y="584"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="circuit25x25" width="25" height="25"/>
-    </resources>
 </document>

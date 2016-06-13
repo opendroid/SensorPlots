@@ -5,6 +5,7 @@
 
 target 'SensorPlots' do
 pod 'CorePlot'
+pod 'Google/Analytics'
 
 end
 
