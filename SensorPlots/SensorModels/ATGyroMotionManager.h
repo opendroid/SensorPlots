@@ -24,6 +24,8 @@
 - (NSNumber *) savedCountOfGyroDataPoints;
 // Setup the Gyro update interval in Hz. 1 to 100 Hz.
 - (NSNumber *) gyroUpdateInterval: (NSNumber *) intervalHzWithDouble;
+- (BOOL) gyroUpdateBackgroundMode: (BOOL) mode;
+- (BOOL) getGyroBackgroundMode;
 
 // Start the Gyro tests if it is not already running.
 - (void) startGyroUpdates;

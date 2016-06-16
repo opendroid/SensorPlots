@@ -11,6 +11,7 @@
 @protocol SPTMagnetoVCProtocol <NSObject>
 @required
 -(void)receiveMagnetoRefreshRateHz:(NSNumber *)value;
+-(void)receiveMagnetoBackgroundConfig:(BOOL)value;
 
 @end
 
@@ -18,5 +19,6 @@
 @property (strong, nonatomic) id<SPTMagnetoVCProtocol>delegate;
 @property (strong, nonatomic) NSNumber *refreshRateHz;
 @property (strong, nonatomic) NSNumber *countOfTestDataValues;
+@property (nonatomic) BOOL    isEnabled;
 
 @end

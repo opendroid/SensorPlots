@@ -101,9 +101,13 @@ double const kATyAxisIntervalMagneto=200;
 NSUInteger const kATyAxisTicksInIntervalMagneto=4;
 
 // Thee constants are used by Gps Graph VC that displays graphs
-NSUInteger const kATGpsMaxPointsToPlot = 5000;
+NSUInteger const kATGpsMaxPointsToPlot = 20000;
 
 // Define keys to store GPS configuration items in
+NSString *const kATGpsBackgroundConfigKey = @"SPTGpsBackgroundConfig";
+NSString *const kATMagnetoBackgroundConfigKey = @"SPTMagnetoBackgroundConfig";
+NSString *const kATGyroBackgroundConfigKey = @"SPTGyroBackgroundConfig";
+NSString *const kATAcceleroBackgroundConfigKey = @"SPTAcceleroBackgroundConfig";
 NSString *const kATGpsConfigKey = @"SPTGpsConfiguration";
 NSString *const kATGpsIsBackgroundOnKey = @"SPTGpsBackgroundMode";
 NSString *const kATGpsUpdateKey = @"SPTGpsUpdate";
@@ -114,6 +118,7 @@ NSString *const kATGpsAccuracyUILKey = @"SPTGpsAccuracyUIL";
 NSString *const kATGpsActivityKey = @"SPTGpsActivity";
 NSString *const kATGpsActivityUISKey = @"SPTGpsActivityUIS";
 NSString *const kATGpsActivityUILKey = @"SPTGpsActivityUIL";
+double const kATMetersPerSecToMPH = 2.23694;
 
 // Define keys to store Map configuration items in NSU
 NSString *const kATMapTypeConfigKey = @"SPTMapTypeConfiguration";

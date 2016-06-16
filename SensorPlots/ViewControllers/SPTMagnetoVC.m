@@ -27,6 +27,7 @@
 @property (strong, nonatomic) ATMagnetoMotionManager *motionManager;
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (strong, nonatomic) NSNumber *refreshRateHz; // Test refesh rate in Hz
+@property (atomic) BOOL  isBackgroundEnabled; // Is background mode on
 @property (strong, nonatomic) NSMutableArray *dataArray; // Data result is here
 @property (strong, nonatomic) id<GAITracker> gaTracker;
 
@@ -56,6 +57,7 @@
     
     self.displayBoardUIL.text = @"-";
     self.refreshRateHz = self.motionManager.refreshRateHz;
+    self.isBackgroundEnabled = [self.motionManager getMagnetoBackgroundMode];
     self.dataArray = [[NSMutableArray alloc] init];
     
     // Setup graph area
@@ -186,6 +188,11 @@
     // Pass the data along to the model
     self.refreshRateHz = [self.motionManager magnetoUpdateInterval:value];
 }
+// Get config data from the Setup controller
+- (void)receiveMagnetoBackgroundConfig:(BOOL)value {
+    // Pass the data along to the model
+    self.isBackgroundEnabled = [self.motionManager magnetoUpdateBackgroundMode:value];
+}
 
 #pragma mark - Mail Composers
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
@@ -221,6 +228,7 @@
     setupVC.title = @"Setup Magneto";
     setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
     setupVC.countOfTestDataValues = [self.motionManager savedCountOfMagnetoDataPoints];
+    setupVC.isEnabled = self.isBackgroundEnabled;
     setupVC.delegate = self;
 }
 
@@ -288,7 +296,8 @@
 
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
-    [self.motionManager stopMagnetoUpdates];
+    if (self.isBackgroundEnabled == NO)
+        [self.motionManager stopMagnetoUpdates];
 }
 
 @end

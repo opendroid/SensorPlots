@@ -24,6 +24,8 @@
 - (NSNumber *) savedCountOfAcclerometerDataPoints;
 // Setup the accelerometer update interval in Hz. 1 to 100 Hz.
 - (NSNumber *) accelerometerUpdateInterval: (NSNumber *) intervalHzWithDouble;
+- (BOOL) accelerometerUpdateBackgroundMode: (BOOL) mode;
+- (BOOL) getAccelerometerBackgroundMode; // Get stored background mode
 
 // Start the Acceleromter tests if it is not already running.
 - (void) startAccelerometerUpdates;

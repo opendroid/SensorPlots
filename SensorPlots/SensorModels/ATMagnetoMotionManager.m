@@ -86,6 +86,11 @@
     return self.refreshRateHz;
 }
 
+- (BOOL) magnetoUpdateBackgroundMode: (BOOL) mode {
+    [self saveMagnetoBackgroundModeInNSU:mode];
+    return mode;
+}
+
 - (void) startMagnetoUpdates {
     if (!self.motionManager.isMagnetometerAvailable) {
         // Inform the error
@@ -277,6 +282,14 @@
         [self saveMagnetoConfigurationInNSU:freqHz];
     }
     return freqHz;
+}
+- (void) saveMagnetoBackgroundModeInNSU: (BOOL) value {
+    [[NSUserDefaults standardUserDefaults] setBool:value forKey:kATMagnetoBackgroundConfigKey];
+}
+
+- (BOOL) getMagnetoBackgroundMode {
+    BOOL mode =  [[NSUserDefaults standardUserDefaults] boolForKey:kATMagnetoBackgroundConfigKey];
+    return mode;
 }
 
 - (void) trashMagnetoStoredData {

@@ -24,6 +24,8 @@
 - (NSNumber *) savedCountOfMagnetoDataPoints;
 // Setup the Magneto update interval in Hz. 1 to 100 Hz.
 - (NSNumber *) magnetoUpdateInterval: (NSNumber *) intervalHzWithDouble;
+- (BOOL) magnetoUpdateBackgroundMode: (BOOL) mode;
+- (BOOL) getMagnetoBackgroundMode; // Get stored background mode
 
 // Start the Magneto tests if it is not already running.
 - (void) startMagnetoUpdates;

@@ -31,6 +31,7 @@
 @property (strong, nonatomic) CLLocationManager *locationManager;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
+@property (atomic) BOOL  isBackgroundEnabled; // Is background mode on
 @property (atomic) NSUInteger countOfUpdates;
 @property (strong, nonatomic) MKPolyline *path;
 
@@ -52,6 +53,12 @@
     self.gpsUpdatesMMV.delegate = self;
     [self updateMapConfig];
     [self updateMap];
+    
+    // Listen to app going to background.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(appEnteredBackgroundMode:)
+                                                 name: UIApplicationDidEnterBackgroundNotification
+                                               object: nil];
     
     // set up GA
     self.gaTracker = [[GAI sharedInstance] defaultTracker];
@@ -139,6 +146,7 @@
     CLActivityType activityType = [[gpsConfig objectForKey:kATGpsActivityKey] integerValue];
     CLLocationAccuracy desiredAccuracy = [[gpsConfig objectForKey:kATGpsAccuracyKey] doubleValue];
     
+    self.isBackgroundEnabled = [[gpsConfig objectForKey:kATGpsIsBackgroundOnKey] boolValue];
     self.locationManager.distanceFilter = distanceFilter;
     self.locationManager.activityType = activityType;
     self.locationManager.desiredAccuracy = desiredAccuracy;
@@ -165,20 +173,30 @@
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
         self.countOfUpdates = 0;
+        if (IS_OS_9_OR_LATER) { // Required after 9.0 for background locatio to run.
+            self.locationManager.allowsBackgroundLocationUpdates = YES;
+        }
         [self.locationManager startUpdatingLocation];
         // Send start a test notification
         [self.gaTracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Test" action:@"Start" label:@"GPS" value:@1] build]];
         self.displayBoardUIL.text = @"GPS Points: 0";
     } else {
-        sender.image = [UIImage imageNamed:@"go25x25"];
-        [self.locationManager stopUpdatingLocation];
-        self.updatesAreInProgress = NO;
-        self.composeUIB.enabled = YES;
-        self.trashUIB.enabled = YES;
-        self.setupUIB.enabled = YES;
+        [self stopLocationUpdates];
         
         // Test is stopped update the map.
         [self updateMap];
+    }
+}
+
+- (void) stopLocationUpdates {
+    self.startStopGpsUIB.image = [UIImage imageNamed:@"go25x25"];
+    [self.locationManager stopUpdatingLocation];
+    self.updatesAreInProgress = NO;
+    self.composeUIB.enabled = YES;
+    self.trashUIB.enabled = YES;
+    self.setupUIB.enabled = YES;
+    if (IS_OS_9_OR_LATER) {
+        self.locationManager.allowsBackgroundLocationUpdates = NO;
     }
 }
 
@@ -314,14 +332,17 @@
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO]];
     NSError *fetchError;
     NSArray *results = [self.managedObjectContext executeFetchRequest:fetchRequest error:&fetchError];
-    [coreDataString appendString:@"latitude,longitude,altitude,verticalAccuracy,horizontalAccuracy,course,speed,timestamp\n"];
+    [coreDataString appendString:@"latitude,longitude,altitude,verticalAccuracy,horizontalAccuracy,course,speedMPH,timestamp\n"];
     
     // Extract the data
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSSSSS Z";
     for (LocationData *d in results) {
         NSString *dateTime = [formatter stringFromDate:d.timestamp];
-        NSString *rowData = [NSString stringWithFormat:@"%f,%f,%f,%f,%f,%f,%f,%@\n", d.latitude.doubleValue, d.longitude.doubleValue, d.altitude.doubleValue, d.verticalAccuracy.doubleValue, d.horizontalAccuracy.doubleValue, d.course.doubleValue, d.speed.doubleValue,dateTime];
+        NSString *rowData = [NSString stringWithFormat:@"%f,%f,%f,%f,%f,%f,%f,%@\n",
+                             d.latitude.doubleValue, d.longitude.doubleValue, d.altitude.doubleValue,
+                             d.verticalAccuracy.doubleValue, d.horizontalAccuracy.doubleValue,
+                             d.course.doubleValue, d.speed.doubleValue*kATMetersPerSecToMPH,dateTime];
         [coreDataString appendString:rowData];
     }
     
@@ -378,7 +399,8 @@
     MKPolylineRenderer* lineView = [[MKPolylineRenderer alloc] initWithPolyline:self.path];
     lineView.strokeColor = [[UIColor blueColor] colorWithAlphaComponent:0.7];
     lineView.fillColor = [[UIColor cyanColor] colorWithAlphaComponent:0.2];
-    lineView.lineWidth = 2;
+    lineView.lineWidth = 3;
+    // lineView.lineDashPattern = @[@3,@8];
     return lineView;
 }
 
@@ -388,10 +410,17 @@
     self.gpsUpdatesMMV.showsCompass = TRUE;
     self.gpsUpdatesMMV.showsTraffic = TRUE;
     self.gpsUpdatesMMV.showsBuildings = TRUE;
+    self.gpsUpdatesMMV.userTrackingMode = MKUserTrackingModeFollow;
     
     NSDictionary *gpsConfig = [self getGpsConfigurationFromNSU];
     MKMapType mapType = [[gpsConfig objectForKey:kATMapTypeConfigKey] integerValue];
     self.gpsUpdatesMMV.mapType = mapType;
+}
+
+#pragma mark - Handle app background event
+- (void) appEnteredBackgroundMode: (UIApplication *)application {
+    if (self.isBackgroundEnabled == NO)
+        [self stopLocationUpdates];
 }
 
 @end

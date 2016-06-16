@@ -11,6 +11,7 @@
 @protocol SPTGyroVCProtocol <NSObject>
 @required
 -(void)receiveGyroRefreshRateHz:(NSNumber *)value;
+-(void)receiveGyroBackgroundConfig:(BOOL)value;
 
 @end
 
@@ -18,5 +19,6 @@
 @property (strong, nonatomic) id<SPTGyroVCProtocol>delegate;
 @property (strong, nonatomic) NSNumber *refreshRateHz;
 @property (strong, nonatomic) NSNumber *countOfTestDataValues;
+@property (nonatomic) BOOL    isEnabled;
 
 @end

@@ -37,9 +37,9 @@
 @property (strong, nonatomic) ATAccelerometerMotionManager *motionManager;
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (strong, nonatomic) NSNumber *refreshRateHz; // Test refesh rate in Hz
+@property (atomic) BOOL  isBackgroundEnabled; // Test refesh rate in Hz
 @property (strong, nonatomic) NSMutableArray *dataArray; // Data result is here
 @property (strong, nonatomic) id<GAITracker> gaTracker;
-
 
 // Handy accessor for plaotSpace
 @property (strong, nonatomic) SPTScatterPlotGraph *accelerometerScatterGraph;
@@ -72,6 +72,7 @@
     }
 
     self.refreshRateHz = self.motionManager.refreshRateHz;
+    self.isBackgroundEnabled = [self.motionManager getAccelerometerBackgroundMode];
     self.dataArray = [[NSMutableArray alloc] init];
     
     // Setup graph area
@@ -206,6 +207,11 @@
     self.refreshRateHz = [self.motionManager accelerometerUpdateInterval:value];
 }
 
+- (void)receiveAccelerometerBackgroundConfig:(BOOL)value {
+    self.isBackgroundEnabled = [self.motionManager accelerometerUpdateBackgroundMode:value];;
+    
+}
+
 #pragma mark - Mail Composers
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
 {
@@ -241,6 +247,7 @@
         setupVC.title = @"Setup Accelerometer";
         setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
         setupVC.countOfTestDataValues = [self.motionManager savedCountOfAcclerometerDataPoints];
+        setupVC.isEnabled = self.isBackgroundEnabled;
         setupVC.delegate = self;
     } else if ([segue.identifier isEqualToString:@"acceleroRecordPopoverSegue"] ) {
         SPTAcclerometerRecordVC *recordVC = segue.destinationViewController;
@@ -342,7 +349,9 @@
 
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
-    [self.motionManager stopAccelerometerUpdates];
+    if (self.isBackgroundEnabled == NO) {
+        [self.motionManager stopAccelerometerUpdates];
+    }
 }
 
 @end

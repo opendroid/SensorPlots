@@ -13,6 +13,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *refreshRateHzUIS;
 @property (weak, nonatomic) IBOutlet UILabel *refreshRateHzUIL;
 @property (weak, nonatomic) IBOutlet UILabel *coreDataCountUIL;
+@property (weak, nonatomic) IBOutlet UISwitch *backgroundUIS;
 
 @end
 
@@ -23,6 +24,7 @@
     
     // Set up the UX
     [self setupUISlider];
+    self.backgroundUIS.on = self.isEnabled;
     self.refreshRateHzUIL.text = [NSString stringWithFormat:@"%d Hz",self.refreshRateHz.intValue];
     self.coreDataCountUIL.text = [NSString stringWithFormat:@"%.lu stored data points.",(long)self.countOfTestDataValues.integerValue];
 }
@@ -67,4 +69,12 @@
         self.refreshRateHzUIL.textColor = customGreen;
     }
 }
+- (IBAction)backgroundHandler:(UISwitch *)sender {
+    // receiveAccelerometerBackgroundConfig
+    if(self.delegate && [self.delegate respondsToSelector:@selector(receiveAccelerometerBackgroundConfig:)]) {
+        [self.delegate receiveAccelerometerBackgroundConfig:sender.isOn];
+    }
+}
+
+
 @end

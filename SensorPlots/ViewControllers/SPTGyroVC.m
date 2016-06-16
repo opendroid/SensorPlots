@@ -31,6 +31,7 @@
 @property (strong, nonatomic) ATGyroMotionManager *motionManager;
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (strong, nonatomic) NSNumber *refreshRateHz; // Test refesh rate in Hz
+@property (atomic) BOOL  isBackgroundEnabled; // Is background mode on
 @property (strong, nonatomic) NSMutableArray *dataArray; // Data result is here
 @property (strong, nonatomic) id<GAITracker> gaTracker;
 
@@ -60,6 +61,7 @@
     
     self.displayBoardUIL.text = @"-";
     self.refreshRateHz = self.motionManager.refreshRateHz;
+    self.isBackgroundEnabled = [self.motionManager getGyroBackgroundMode];
     self.dataArray = [[NSMutableArray alloc] init];
     
     // Setup graph area
@@ -196,6 +198,12 @@
     self.refreshRateHz = [self.motionManager gyroUpdateInterval:value];
 }
 
+// Get config data from the Setup controller
+- (void)receiveGyroBackgroundConfig:(BOOL)value {
+    // Pass the data along to the model
+    self.isBackgroundEnabled = [self.motionManager gyroUpdateBackgroundMode:value];
+}
+
 #pragma mark - Mail Composers
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
 {
@@ -230,6 +238,7 @@
     setupVC.title = @"Setup Gyro";
     setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
     setupVC.countOfTestDataValues = [self.motionManager savedCountOfGyroDataPoints];
+    setupVC.isEnabled = self.isBackgroundEnabled;
     setupVC.delegate = self;
 }
 
@@ -297,7 +306,8 @@
 
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
-    [self.motionManager stopGyroUpdates];
+    if (self.isBackgroundEnabled == NO)
+        [self.motionManager stopGyroUpdates];
 }
 
 @end

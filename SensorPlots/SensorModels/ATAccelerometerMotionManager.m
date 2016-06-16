@@ -87,6 +87,10 @@
     return self.refreshRateHz;
 }
 
+- (BOOL) accelerometerUpdateBackgroundMode: (BOOL) mode {
+    [self saveAccelerometerBackgroundModeInNSU:mode];
+    return mode;
+}
 - (void) startAccelerometerUpdates {
     
     if(self.accelerometerStartedByUser) {
@@ -279,6 +283,15 @@
         [self saveAccelerometerConfigurationInNSU:freqHz];
     }
     return freqHz;
+}
+
+- (void) saveAccelerometerBackgroundModeInNSU: (BOOL) value {
+    [[NSUserDefaults standardUserDefaults] setBool:value forKey:kATAcceleroBackgroundConfigKey];
+}
+
+- (BOOL) getAccelerometerBackgroundMode {
+    BOOL mode =  [[NSUserDefaults standardUserDefaults] boolForKey:kATAcceleroBackgroundConfigKey];
+    return mode;
 }
 
 - (void) trashAccelerometerStoredData {

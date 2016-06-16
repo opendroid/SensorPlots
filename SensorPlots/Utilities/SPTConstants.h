@@ -11,6 +11,7 @@
 #define SPTConstants_h
 
 #define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+#define IS_OS_9_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0)
 #define IS_OS_42_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.2)
 
 // Debug
@@ -90,6 +91,10 @@ FOUNDATION_EXPORT NSUInteger const kATyAxisTicksInIntervalMagneto;
 FOUNDATION_EXPORT NSUInteger const kATGpsMaxPointsToPlot;
 
 // Define keys to store GPS configuration items in NSU
+FOUNDATION_EXPORT NSString *const kATGpsBackgroundConfigKey;
+FOUNDATION_EXPORT NSString *const kATMagnetoBackgroundConfigKey;
+FOUNDATION_EXPORT NSString *const kATGyroBackgroundConfigKey;
+FOUNDATION_EXPORT NSString *const kATAcceleroBackgroundConfigKey;
 FOUNDATION_EXPORT NSString *const kATGpsConfigKey;
 FOUNDATION_EXPORT NSString *const kATGpsIsBackgroundOnKey;
 FOUNDATION_EXPORT NSString *const kATGpsUpdateKey;
@@ -100,6 +105,7 @@ FOUNDATION_EXPORT NSString *const kATGpsAccuracyUILKey;
 FOUNDATION_EXPORT NSString *const kATGpsActivityKey;
 FOUNDATION_EXPORT NSString *const kATGpsActivityUISKey;
 FOUNDATION_EXPORT NSString *const kATGpsActivityUILKey;
+FOUNDATION_EXPORT double const kATMetersPerSecToMPH;
 
 // Define keys to store Map configuration items in NSU
 FOUNDATION_EXPORT NSString *const kATMapTypeConfigKey;

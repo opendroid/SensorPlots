@@ -85,6 +85,11 @@
     return self.refreshRateHz;
 }
 
+- (BOOL) gyroUpdateBackgroundMode: (BOOL) mode {
+    [self saveGyroBackgroundModeInNSU:mode];
+    return mode;
+}
+
 - (void) startGyroUpdates{
     
     if(self.gyroUpdatesStartedByUser) {
@@ -281,6 +286,15 @@
         [self saveGyroConfigurationInNSU:freqHz];
     }
     return freqHz;
+}
+
+- (void) saveGyroBackgroundModeInNSU: (BOOL) value {
+    [[NSUserDefaults standardUserDefaults] setBool:value forKey:kATGyroBackgroundConfigKey];
+}
+
+- (BOOL) getGyroBackgroundMode {
+    BOOL mode =  [[NSUserDefaults standardUserDefaults] boolForKey:kATGyroBackgroundConfigKey];
+    return mode;
 }
 
 - (void) trashGyroStoredData {
