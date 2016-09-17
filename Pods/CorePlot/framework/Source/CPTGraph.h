@@ -64,7 +64,7 @@ typedef NS_ENUM (NSInteger, CPTGraphLayerType) {
 
 /// @name Hosting View
 /// @{
-@property (nonatomic, readwrite, cpt_weak_property, nullable) cpt_weak CPTGraphHostingView *hostingView;
+@property (nonatomic, readwrite, cpt_weak_property, nullable) CPTGraphHostingView *hostingView;
 /// @}
 
 /// @name Title
@@ -81,7 +81,7 @@ typedef NS_ENUM (NSInteger, CPTGraphLayerType) {
 @property (nonatomic, readwrite, strong, nullable) CPTAxisSet *axisSet;
 @property (nonatomic, readwrite, strong, nullable) CPTPlotAreaFrame *plotAreaFrame;
 @property (nonatomic, readonly, nullable) CPTPlotSpace *defaultPlotSpace;
-@property (nonatomic, readwrite, strong, nullable) CPTNumberArray topDownLayerOrder;
+@property (nonatomic, readwrite, strong, nullable) CPTNumberArray *topDownLayerOrder;
 /// @}
 
 /// @name Legend
@@ -99,24 +99,24 @@ typedef NS_ENUM (NSInteger, CPTGraphLayerType) {
 
 /// @name Retrieving Plots
 /// @{
--(nonnull CPTPlotArray)allPlots;
+-(nonnull CPTPlotArray *)allPlots;
 -(nullable CPTPlot *)plotAtIndex:(NSUInteger)idx;
 -(nullable CPTPlot *)plotWithIdentifier:(nullable id<NSCopying>)identifier;
 /// @}
 
 /// @name Adding and Removing Plots
 /// @{
--(void)addPlot:(nullable CPTPlot *)plot;
--(void)addPlot:(nullable CPTPlot *)plot toPlotSpace:(nullable CPTPlotSpace *)space;
+-(void)addPlot:(nonnull CPTPlot *)plot;
+-(void)addPlot:(nonnull CPTPlot *)plot toPlotSpace:(nullable CPTPlotSpace *)space;
 -(void)removePlot:(nullable CPTPlot *)plot;
 -(void)removePlotWithIdentifier:(nullable id<NSCopying>)identifier;
--(void)insertPlot:(nullable CPTPlot *)plot atIndex:(NSUInteger)idx;
--(void)insertPlot:(nullable CPTPlot *)plot atIndex:(NSUInteger)idx intoPlotSpace:(nullable CPTPlotSpace *)space;
+-(void)insertPlot:(nonnull CPTPlot *)plot atIndex:(NSUInteger)idx;
+-(void)insertPlot:(nonnull CPTPlot *)plot atIndex:(NSUInteger)idx intoPlotSpace:(nullable CPTPlotSpace *)space;
 /// @}
 
 /// @name Retrieving Plot Spaces
 /// @{
--(nonnull CPTPlotSpaceArray)allPlotSpaces;
+-(nonnull CPTPlotSpaceArray *)allPlotSpaces;
 -(nullable CPTPlotSpace *)plotSpaceAtIndex:(NSUInteger)idx;
 -(nullable CPTPlotSpace *)plotSpaceWithIdentifier:(nullable id<NSCopying>)identifier;
 /// @}

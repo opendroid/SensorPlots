@@ -20,28 +20,28 @@ extern NSString *__nonnull const CPTLayerBoundsDidChangeNotification;
 /**
  *  @brief An array of CALayer objects.
  **/
-typedef NSArray<CALayer *> *CPTSublayerArray;
+typedef NSArray<CALayer *> CPTSublayerArray;
 
 /**
  *  @brief A mutable array of CALayer objects.
  **/
-typedef NSMutableArray<CALayer *> *CPTMutableSublayerArray;
+typedef NSMutableArray<CALayer *> CPTMutableSublayerArray;
 
 /**
  *  @brief A set of CALayer objects.
  **/
-typedef NSSet<CALayer *> *CPTSublayerSet;
+typedef NSSet<CALayer *> CPTSublayerSet;
 
 /**
  *  @brief A mutable set of CALayer objects.
  **/
-typedef NSMutableSet<CALayer *> *CPTMutableSublayerSet;
+typedef NSMutableSet<CALayer *> CPTMutableSublayerSet;
 
-@interface CPTLayer : CALayer<CPTResponder>
+@interface CPTLayer : CALayer<CPTResponder, NSSecureCoding>
 
 /// @name Graph
 /// @{
-@property (nonatomic, readwrite, cpt_weak_property, nullable) cpt_weak CPTGraph *graph;
+@property (nonatomic, readwrite, cpt_weak_property, nullable) CPTGraph *graph;
 /// @}
 
 /// @name Padding
@@ -76,13 +76,13 @@ typedef NSMutableSet<CALayer *> *CPTMutableSublayerSet;
 
 /// @name Layout
 /// @{
-@property (nonatomic, readonly, nullable) CPTSublayerSet sublayersExcludedFromAutomaticLayout;
+@property (nonatomic, readonly, nullable) CPTSublayerSet *sublayersExcludedFromAutomaticLayout;
 /// @}
 
 /// @name Initialization
 /// @{
 -(nonnull instancetype)initWithFrame:(CGRect)newFrame NS_DESIGNATED_INITIALIZER;
--(nonnull instancetype)initWithCoder:(nonnull NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+-(nullable instancetype)initWithCoder:(nonnull NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 -(nonnull instancetype)initWithLayer:(nonnull id)layer NS_DESIGNATED_INITIALIZER;
 /// @}
 

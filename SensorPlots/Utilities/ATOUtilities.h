@@ -13,5 +13,20 @@
 
 + (NSString *) createDataFilePathForName: (NSString *) fileName;
 + (void) showAppAlertWithMessage: (NSString *) message andViewController: (UIViewController *) vc;
++ (NSNumber *) getAccelerometerConfigurationFromNSU;
++ (NSNumber *) getGyroConfigurationFromNSU;
++ (NSNumber *) getMagnetoConfigurationFromNSU;
+
++ (BOOL) getAccelerometerBackgroundMode;
++ (BOOL) getGyroBackgroundMode;
++ (BOOL) getMagnetoBackgroundMode;
+
++ (NSDictionary *) getGpsConfigurationFromNSU;
++ (void) saveGpsConfig: (NSDictionary *) gpsConfigData;
+
++ (NSNumber *) savedCountOfGyroDataPoints;
++ (NSNumber *) savedCountOfMagnetoDataPoints;
++ (NSNumber *) savedCountOfAcceleroDataPoints;
++ (NSNumber *) savedCountOfLocationDataPoints;
 
 @end

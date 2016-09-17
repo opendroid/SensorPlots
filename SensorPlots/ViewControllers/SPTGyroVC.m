@@ -10,12 +10,12 @@
 #import "ATSensorData.h"
 #import "ATGyroMotionManager.h"
 #import "SPTScatterPlotGraph.h"
-#import "SPTGyroSetupVC.h"
 #import "ATSensorData.h"
 #import "SPTConstants.h"
+#import "ATOUtilities.h"
 #import <Google/Analytics.h>
 
-@interface SPTGyroVC() <SPTGyroVCProtocol, MFMailComposeViewControllerDelegate, ATGyroMotionManagerDelegate, CPTPlotDataSource>
+@interface SPTGyroVC() <MFMailComposeViewControllerDelegate, ATGyroMotionManagerDelegate, CPTPlotDataSource>
 
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *startStopSensorUIB;
@@ -127,8 +127,9 @@
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
-        [self.motionManager startGyroUpdates];
         
+        NSNumber *refreshRate = [ATOUtilities getGyroConfigurationFromNSU];
+        [self.motionManager startGyroUpdatesWithInterval:refreshRate];
         // Track the event
         // To determine how many dragons are being rescued, send an event when the
         // player rescues a dragon.
@@ -190,19 +191,6 @@
     self.startStopSensorUIB.image = [UIImage imageNamed:@"go25x25"];
 }
 
-#pragma mark - SPTGyroVCProtocol handlers
-
-// Get config data from the Setup controller
-- (void)receiveGyroRefreshRateHz:(NSNumber *)value {
-    // Pass the data along to the model
-    self.refreshRateHz = [self.motionManager gyroUpdateInterval:value];
-}
-
-// Get config data from the Setup controller
-- (void)receiveGyroBackgroundConfig:(BOOL)value {
-    // Pass the data along to the model
-    self.isBackgroundEnabled = [self.motionManager gyroUpdateBackgroundMode:value];
-}
 
 #pragma mark - Mail Composers
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
@@ -234,12 +222,7 @@
 #pragma mark - Segue Handlers
 // Pass data to child setup controller.
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    SPTGyroSetupVC *setupVC = segue.destinationViewController;
-    setupVC.title = @"Setup Gyro";
-    setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
-    setupVC.countOfTestDataValues = [self.motionManager savedCountOfGyroDataPoints];
-    setupVC.isEnabled = self.isBackgroundEnabled;
-    setupVC.delegate = self;
+
 }
 
 #pragma mark - Gyro Graph View Area
@@ -306,6 +289,7 @@
 
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
+    self.isBackgroundEnabled = [self.motionManager getGyroBackgroundMode];
     if (self.isBackgroundEnabled == NO)
         [self.motionManager stopGyroUpdates];
 }

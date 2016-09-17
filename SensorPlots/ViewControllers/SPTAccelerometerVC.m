@@ -8,17 +8,17 @@
 
 
 #import "SPTAccelerometerVC.h"
-#import "SPTAccelerometerSetupVC.h"
 #import "SPTAcclerometerRecordVC.h"
 #import "ATAccelerometerMotionManager.h"
 #import "SPTScatterPlotGraph.h"
 #import "ATSensorData.h"
 #import "SPTConstants.h"
+#import "ATOUtilities.h"
 #import <Google/Analytics.h>
 
 @import CoreMotion;
 
-@interface SPTAccelerometerVC() <SPTAccelerometerVCProtocol, MFMailComposeViewControllerDelegate, ATAccelerometerMotionManagerDelegate, CPTPlotDataSource, UIPopoverPresentationControllerDelegate>
+@interface SPTAccelerometerVC() <MFMailComposeViewControllerDelegate, ATAccelerometerMotionManagerDelegate, CPTPlotDataSource, UIPopoverPresentationControllerDelegate>
 
 // Bar button icons accessors
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *startStopSensorUIB;
@@ -139,8 +139,8 @@
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
-        [self.motionManager startAccelerometerUpdates];
-        
+        NSNumber *refreshRate = [ATOUtilities getAccelerometerConfigurationFromNSU];
+        [self.motionManager startAccelerometerUpdatesWithInterval:refreshRate];
         // Track the start test event
         [self.gaTracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Test" action:@"Start" label:@"Accelero" value:@1] build]];
         
@@ -202,15 +202,6 @@
     self.startStopSensorUIB.image = [UIImage imageNamed:@"go25x25"];
 }
 
-#pragma mark - SPTAccelerometerVCProtocol handlers
-- (void)receiveAccelerometerRefreshRateHz:(NSNumber *)value {
-    self.refreshRateHz = [self.motionManager accelerometerUpdateInterval:value];
-}
-
-- (void)receiveAccelerometerBackgroundConfig:(BOOL)value {
-    self.isBackgroundEnabled = [self.motionManager accelerometerUpdateBackgroundMode:value];;
-    
-}
 
 #pragma mark - Mail Composers
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
@@ -242,14 +233,7 @@
 #pragma mark - Segue Handlers
 // Pass data to child controller.
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"accelBtnToSetupSegue"] ) {
-        SPTAccelerometerSetupVC *setupVC = segue.destinationViewController;
-        setupVC.title = @"Setup Accelerometer";
-        setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
-        setupVC.countOfTestDataValues = [self.motionManager savedCountOfAcclerometerDataPoints];
-        setupVC.isEnabled = self.isBackgroundEnabled;
-        setupVC.delegate = self;
-    } else if ([segue.identifier isEqualToString:@"acceleroRecordPopoverSegue"] ) {
+    if ([segue.identifier isEqualToString:@"acceleroRecordPopoverSegue"] ) {
         SPTAcclerometerRecordVC *recordVC = segue.destinationViewController;
         recordVC.popoverPresentationController.delegate = self;
         recordVC.modalPresentationStyle = UIModalPresentationPopover;
@@ -349,6 +333,7 @@
 
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
+    self.isBackgroundEnabled = [self.motionManager getAccelerometerBackgroundMode];
     if (self.isBackgroundEnabled == NO) {
         [self.motionManager stopAccelerometerUpdates];
     }

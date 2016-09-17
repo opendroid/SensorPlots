@@ -33,7 +33,7 @@
 - (instancetype) init {
     if (self = [super init]) {
         // Configure App delegate, motion manager and MBO
-        self.appDelegate = [UIApplication sharedApplication].delegate;
+        self.appDelegate =(AppDelegate *) [UIApplication sharedApplication].delegate;
         if ([self.appDelegate respondsToSelector:@selector(motionManager)]) {
             self.motionManager = [self.appDelegate motionManager];
             if (self.motionManager && !self.refreshRateHz ) {
@@ -299,7 +299,7 @@
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"AccelerometerData"];
     NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
     
-    AppDelegate *app = [UIApplication sharedApplication].delegate;
+    AppDelegate *app = (AppDelegate *) [UIApplication sharedApplication].delegate;
     NSError *deleteError = nil;
     [app.persistentStoreCoordinator executeRequest:delete withContext:self.managedObjectContext error:&deleteError];
     if (deleteError && self.delegate && [self.delegate respondsToSelector:@selector(accelerometerError:)]) {

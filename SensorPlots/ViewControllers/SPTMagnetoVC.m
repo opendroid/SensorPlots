@@ -7,14 +7,14 @@
 //
 
 #import "SPTMagnetoVC.h"
-#import "SPTMagnetoSetupVC.h"
 #import "ATMagnetoMotionManager.h"
 #import "SPTScatterPlotGraph.h"
 #import "ATSensorData.h"
 #import "SPTConstants.h"
+#import "ATOUtilities.h"
 #import <Google/Analytics.h>
 
-@interface SPTMagnetoVC() <SPTMagnetoVCProtocol, MFMailComposeViewControllerDelegate, ATMagnetoMotionManagerDelegate, CPTPlotDataSource>
+@interface SPTMagnetoVC() <MFMailComposeViewControllerDelegate, ATMagnetoMotionManagerDelegate, CPTPlotDataSource>
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *startStopSensorUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *composeUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *trashUIB;
@@ -122,7 +122,8 @@
         self.composeUIB.enabled = NO;
         self.trashUIB.enabled = NO;
         self.setupUIB.enabled = NO;
-        [self.motionManager startMagnetoUpdates];
+        NSNumber *refreshRate = [ATOUtilities getMagnetoConfigurationFromNSU];
+        [self.motionManager startMagnetoUpdatesWithInterval:refreshRate];
         // Send start a test notification
         [self.gaTracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Test" action:@"Start" label:@"Magneto" value:@1] build]];
     } else {
@@ -181,19 +182,6 @@
     self.startStopSensorUIB.image = [UIImage imageNamed:@"go25x25"];
 }
 
-#pragma mark - SPTMagnetoVCProtocol handlers
-
-// Get config data from the Setup controller
-- (void)receiveMagnetoRefreshRateHz:(NSNumber *)value {
-    // Pass the data along to the model
-    self.refreshRateHz = [self.motionManager magnetoUpdateInterval:value];
-}
-// Get config data from the Setup controller
-- (void)receiveMagnetoBackgroundConfig:(BOOL)value {
-    // Pass the data along to the model
-    self.isBackgroundEnabled = [self.motionManager magnetoUpdateBackgroundMode:value];
-}
-
 #pragma mark - Mail Composers
 - (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
 {
@@ -224,12 +212,7 @@
 #pragma mark - Segue Handlers
 // Pass data to child setup controller.
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    SPTMagnetoSetupVC *setupVC = segue.destinationViewController;
-    setupVC.title = @"Setup Magneto";
-    setupVC.refreshRateHz = [NSNumber numberWithFloat:self.refreshRateHz.doubleValue];
-    setupVC.countOfTestDataValues = [self.motionManager savedCountOfMagnetoDataPoints];
-    setupVC.isEnabled = self.isBackgroundEnabled;
-    setupVC.delegate = self;
+
 }
 
 #pragma mark - Magneto Graph View Area
@@ -265,9 +248,7 @@
     
 }
 
-
 #pragma mark - Magneto Graph Data
-
 - (NSUInteger)numberOfRecordsForPlot:(CPTPlot *)plot {
     return self.dataArray.count;
 }
@@ -296,6 +277,7 @@
 
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
+    self.isBackgroundEnabled = [self.motionManager getMagnetoBackgroundMode];
     if (self.isBackgroundEnabled == NO)
         [self.motionManager stopMagnetoUpdates];
 }

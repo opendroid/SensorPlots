@@ -7,7 +7,6 @@
 //
 
 #import "SPTGpsVC.h"
-#import "SPTGpsSetupVC.h"
 #import "SPTConstants.h"
 #import "AppDelegate.h"
 #import "LocationData.h"
@@ -18,7 +17,7 @@
 @import MapKit;
 @import MessageUI;
 
-@interface SPTGpsVC() <SPTGpsVCProtocol, CLLocationManagerDelegate, MFMailComposeViewControllerDelegate, MKMapViewDelegate>
+@interface SPTGpsVC() <CLLocationManagerDelegate, MFMailComposeViewControllerDelegate, MKMapViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *composeUIB;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *trashUIB;
@@ -34,6 +33,7 @@
 @property (atomic) BOOL  isBackgroundEnabled; // Is background mode on
 @property (atomic) NSUInteger countOfUpdates;
 @property (strong, nonatomic) MKPolyline *path;
+@property (nonatomic) MKMapType mapType;
 
 @end
 
@@ -45,7 +45,7 @@
     [self initializeLocationServices];
     self.displayBoardUIL.text = @"";
     self.countOfUpdates = 0;
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
     self.managedObjectContext = appDelegate.managedObjectContext;
     
     // Show goodies on map if available.
@@ -53,12 +53,24 @@
     self.gpsUpdatesMMV.delegate = self;
     [self updateMapConfig];
     [self updateMap];
-    
+    NSNumber *mType = [[[NSUserDefaults standardUserDefaults] objectForKey:kATGpsConfigKey] objectForKey:kATMapTypeConfigKey];
+    if (mType != nil) {
+        self.mapType = mType.integerValue;
+    } else {
+        self.mapType = MKMapTypeStandard;
+    }
     // Listen to app going to background.
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(appEnteredBackgroundMode:)
                                                  name: UIApplicationDidEnterBackgroundNotification
                                                object: nil];
+    
+    // Observe for changes in Map display type.
+    // Note that the 'SPTGpsConfiguration.SPTMapTypeConfiguration' causes crash
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:kATGpsConfigKey
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
     
     // set up GA
     self.gaTracker = [[GAI sharedInstance] defaultTracker];
@@ -114,12 +126,7 @@
 #pragma mark - Segue Handlers
 // Pass data to child setup controller.
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    SPTGpsSetupVC *setupVC = segue.destinationViewController;
-    setupVC.title = @"Setup GPS";
-    // Create a Mutable copy of dictionary
-    setupVC.configurationData = [[self getGpsConfigurationFromNSU] mutableCopy];
-    setupVC.countOfLocationPoints = [self savedCountOfGpsDataPoints];
-    setupVC.delegate = self;
+
 }
 
 #pragma mark - Location Manager Setup
@@ -166,6 +173,7 @@
 #pragma mark - Location Manager UX Handlers
 - (IBAction)startStopCapturingGpsHandler:(UIBarButtonItem *)sender {
     if (! self.updatesAreInProgress) {
+        [self locationManagerUpdateConfiguration];
         sender.image = [UIImage imageNamed:@"hand25x25"];
         self.updatesAreInProgress = YES;
         // Disable other buttons while test in progress.
@@ -205,7 +213,7 @@
     NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"LocationData"];
     NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
     
-    AppDelegate *app = [UIApplication sharedApplication].delegate;
+    AppDelegate *app = (AppDelegate *) [UIApplication sharedApplication].delegate;
     NSError *deleteError = nil;
     [app.persistentStoreCoordinator executeRequest:delete withContext:self.managedObjectContext error:&deleteError];
     if (deleteError) {
@@ -417,8 +425,29 @@
     self.gpsUpdatesMMV.mapType = mapType;
 }
 
+#pragma mark - Listening to changes in Map type
+// Only change map type when updated
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
+    if ([keyPath isEqualToString:kATGpsConfigKey]) {
+        // Interested in map type change
+        NSDictionary *newData = [change objectForKey:NSKeyValueChangeNewKey];
+        if (newData != nil) {
+            NSNumber *newMapType = [newData objectForKey:kATMapTypeConfigKey];
+            if (newMapType != nil) {
+                if (self.mapType != newMapType.integerValue) {
+                    [self updateMapConfig];
+                    self.mapType = newMapType.integerValue;
+                }
+            } // end 'newMapType != nil'
+        }
+    }
+}
+
+
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
+    NSDictionary *gpsConfig = [self getGpsConfigurationFromNSU];
+    self.isBackgroundEnabled = [[gpsConfig objectForKey:kATGpsIsBackgroundOnKey] boolValue];
     if (self.isBackgroundEnabled == NO)
         [self stopLocationUpdates];
 }
