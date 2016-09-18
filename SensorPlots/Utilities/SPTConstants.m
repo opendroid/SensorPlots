@@ -19,6 +19,7 @@ NSString *const kATAcceleroVC = @"PageAccelero";
 NSString *const kATGyroVC = @"PageGyro";
 NSString *const kATMagnetoVC = @"PageMagneto";
 NSString *const kATGpsVC = @"PageGps";
+NSString *const kATSettingsVC = @"PageSettings";
 
 NSString *const kATAcceleroTestEvent = @"CaptureAccelero";
 NSString *const kATGyroTestEvent = @"CaptureGyro";
@@ -101,23 +102,26 @@ double const kATyAxisIntervalMagneto=200;
 NSUInteger const kATyAxisTicksInIntervalMagneto=4;
 
 // Thee constants are used by Gps Graph VC that displays graphs
-NSUInteger const kATGpsMaxPointsToPlot = 20000;
+NSUInteger const kATGpsMaxPointsToPlot = 30000;
 
-// Define keys to store GPS configuration items in
-NSString *const kATGpsBackgroundConfigKey = @"SPTGpsBackgroundConfig";
+// Define keys to store GPS configuration items in NSU
 NSString *const kATMagnetoBackgroundConfigKey = @"SPTMagnetoBackgroundConfig";
 NSString *const kATGyroBackgroundConfigKey = @"SPTGyroBackgroundConfig";
 NSString *const kATAcceleroBackgroundConfigKey = @"SPTAcceleroBackgroundConfig";
+
+NSString *const kATMagnetoSampleRateHzKey = @"SPTMagnetoHzSetting";
+NSString *const kATGyroSampleRateHzKey = @"SPTGyroHzSetting";
+NSString *const kATAcceleroSampleRateHzKey = @"SPTAccelerometerHzSetting";
+
 NSString *const kATGpsConfigKey = @"SPTGpsConfiguration";
 NSString *const kATGpsIsBackgroundOnKey = @"SPTGpsBackgroundMode";
 NSString *const kATGpsUpdateKey = @"SPTGpsUpdate";
 NSString *const kATGpsUpdateUILKey = @"SPTGpsUpdateUIL";
-NSString *const kATGpsAccuracyKey = @"SPTGpsAccuracy";
+NSString *const kATGpsAccuracyKey = @"SPTGpsAccuracy"; 
 NSString *const kATGpsAccuracyUISKey = @"SPTGpsAccuracyUIS";
 NSString *const kATGpsAccuracyUILKey = @"SPTGpsAccuracyUIL";
 NSString *const kATGpsActivityKey = @"SPTGpsActivity";
 NSString *const kATGpsActivityUISKey = @"SPTGpsActivityUIS";
-NSString *const kATGpsActivityUILKey = @"SPTGpsActivityUIL";
 double const kATMetersPerSecToMPH = 2.23694;
 
 // Define keys to store Map configuration items in NSU

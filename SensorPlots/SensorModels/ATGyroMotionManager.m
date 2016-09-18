@@ -276,11 +276,11 @@
 
 #pragma mark - Utility methods used in the class
 - (void) saveGyroConfigurationInNSU: (NSNumber *) freqHz {
-    [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:@"SPTGyroHzSetting"];
+    [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:kATGyroSampleRateHzKey];
 }
 
 - (NSNumber *) getGyroConfigurationInNSU {
-    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:@"SPTGyroHzSetting"];
+    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:kATGyroSampleRateHzKey];
     if (!freqHz) {
         freqHz = [[NSNumber alloc] initWithFloat:33.0];
         [self saveGyroConfigurationInNSU:freqHz];

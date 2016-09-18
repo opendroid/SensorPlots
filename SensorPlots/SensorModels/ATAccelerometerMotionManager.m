@@ -273,11 +273,11 @@
 
 #pragma mark - Utility methods used in the class
 - (void) saveAccelerometerConfigurationInNSU: (NSNumber *) freqHz {
-    [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:@"SPTAccelerometerHzSetting"];
+    [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:kATAcceleroSampleRateHzKey];
 }
 
 - (NSNumber *) getAccelerometerConfigurationInNSU {
-    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:@"SPTAccelerometerHzSetting"];
+    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:kATAcceleroSampleRateHzKey];
     if (!freqHz) {
         freqHz = [[NSNumber alloc] initWithFloat:33.0];
         [self saveAccelerometerConfigurationInNSU:freqHz];

@@ -370,6 +370,97 @@
             </objects>
             <point key="canvasLocation" x="2125.5" y="-2286"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="oty-vZ-gxY">
+            <objects>
+                <viewController modalPresentationStyle="currentContext" id="ADU-C6-I1C" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="9wj-6s-SWK"/>
+                        <viewControllerLayoutGuide type="bottom" id="Sty-t7-Rht"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Mes-Ea-DL5">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nKn-ZA-y3E" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3491" y="-2559"/>
+        </scene>
+        <!--Trips-->
+        <scene sceneID="yi6-ZZ-jXj">
+            <objects>
+                <tableViewController modalPresentationStyle="currentContext" clearsSelectionOnViewWillAppear="NO" id="UUD-Mw-KId" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="qie-sm-adI">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="gpsTrips" id="dDu-C9-g3R">
+                                <rect key="frame" x="0.0" y="92" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dDu-C9-g3R" id="fUq-5B-XqG">
+                                    <frame key="frameInset" width="375" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="UUD-Mw-KId" id="D0z-GY-btG"/>
+                            <outlet property="delegate" destination="UUD-Mw-KId" id="iLm-o2-5do"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Trips" id="a3B-oH-xcM">
+                        <barButtonItem key="backBarButtonItem" title="Trips" id="fE1-k2-WDe"/>
+                        <leftBarButtonItems>
+                            <barButtonItem image="back25x25" id="poT-81-jGg">
+                                <connections>
+                                    <segue destination="JzN-NI-TGw" kind="unwind" unwindAction="unwindToSPTGpsVC:" id="91Y-o0-DyU"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="GPS" id="DuC-Wh-SeP">
+                                <connections>
+                                    <segue destination="JzN-NI-TGw" kind="unwind" identifier="UnwindTripsSVCToSPTGpsVC" unwindAction="unwindToSPTGpsVC:" id="bqa-zI-te1"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Z02-mq-qNP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="JzN-NI-TGw" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="4442" y="-3216"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="KJt-K4-16c">
+            <objects>
+                <navigationController id="eWD-2O-Qbr" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="esA-G1-5PG">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="UUD-Mw-KId" kind="relationship" relationship="rootViewController" id="dpa-5h-ESc"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fTh-fs-PY6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3491" y="-3216"/>
+        </scene>
+        <!--Split View Controller-->
+        <scene sceneID="vrr-pI-lbx">
+            <objects>
+                <splitViewController id="KJr-a8-ipa" sceneMemberID="viewController">
+                    <connections>
+                        <segue destination="eWD-2O-Qbr" kind="relationship" relationship="masterViewController" id="4QZ-Yk-QvT"/>
+                        <segue destination="ADU-C6-I1C" kind="relationship" relationship="detailViewController" id="bua-pO-APR"/>
+                    </connections>
+                </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8Ba-em-pKo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2422" y="-2900"/>
+        </scene>
         <!--LocationVC-->
         <scene sceneID="KXK-sB-ZBh">
             <objects>
@@ -410,7 +501,11 @@
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
-                            <barButtonItem image="timeline25x25" id="c0p-YS-yD1"/>
+                            <barButtonItem image="timeline25x25" id="c0p-YS-yD1">
+                                <connections>
+                                    <segue destination="KJr-a8-ipa" kind="presentation" identifier="SPTGpsVCToTripsSVC" id="dMe-on-rw1"/>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem image="go25x25" id="vej-P5-Wvs">
                                 <connections>
                                     <action selector="startStopCapturingGpsHandler:" destination="0Pb-9H-7t7" id="r9Z-qv-e9I"/>
@@ -592,7 +687,7 @@
                             <tableViewSection headerTitle="Accelero" footerTitle="" id="5ss-Tl-h7k">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="101" id="eVT-oq-r89">
-                                        <rect key="frame" x="0.0" y="119.5" width="375" height="101"/>
+                                        <rect key="frame" x="0.0" y="130" width="375" height="101"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eVT-oq-r89" id="rnj-Cz-hnr">
                                             <frame key="frameInset" width="375" height="100.5"/>
@@ -1214,6 +1309,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="back25x25" width="25" height="25"/>
         <image name="bullet_camera25x25" width="25" height="25"/>
         <image name="go25x25" width="25" height="25"/>
         <image name="gyroscope25x25" width="25" height="25"/>

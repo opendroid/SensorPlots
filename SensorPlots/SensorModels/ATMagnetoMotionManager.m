@@ -232,6 +232,7 @@
         } else {
             self.magnetoUpdatesStoppedByUser = NO;
         }
+        
     });
 }
 
@@ -272,11 +273,11 @@
 
 #pragma mark - Utility methods used in the class
 - (void) saveMagnetoConfigurationInNSU: (NSNumber *) freqHz {
-    [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:@"SPTMagnetoHzSetting"];
+    [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:kATMagnetoSampleRateHzKey];
 }
 
 - (NSNumber *) getMagnetoConfigurationInNSU {
-    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:@"SPTMagnetoHzSetting"];
+    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:kATMagnetoSampleRateHzKey];
     if (!freqHz) {
         freqHz = [[NSNumber alloc] initWithFloat:33.0];
         [self saveMagnetoConfigurationInNSU:freqHz];

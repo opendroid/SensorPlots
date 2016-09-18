@@ -38,28 +38,28 @@
   * Utilities to get the Refresh Rate Settings from NSUserDefaults
   */
 + (NSNumber *) getAccelerometerConfigurationFromNSU {
-    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:@"SPTAccelerometerHzSetting"];
+    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:kATAcceleroSampleRateHzKey];
     if (!freqHz) {
         freqHz = [[NSNumber alloc] initWithFloat:33.0];
-        [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:@"SPTAccelerometerHzSetting"];
+        [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:kATAcceleroSampleRateHzKey];
     }
     return freqHz;
 }
 
 + (NSNumber *) getGyroConfigurationFromNSU {
-    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:@"SPTGyroHzSetting"];
+    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:kATGyroSampleRateHzKey];
     if (!freqHz) {
         freqHz = [[NSNumber alloc] initWithFloat:33.0];
-        [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:@"SPTGyroHzSetting"];
+        [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:kATGyroSampleRateHzKey];
     }
     return freqHz;
 }
 
 + (NSNumber *) getMagnetoConfigurationFromNSU {
-    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:@"SPTMagnetoHzSetting"];
+    NSNumber *freqHz =  [[NSUserDefaults standardUserDefaults] objectForKey:kATMagnetoSampleRateHzKey];
     if (!freqHz) {
         freqHz = [[NSNumber alloc] initWithFloat:33.0];
-        [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:@"SPTMagnetoHzSetting"];
+        [[NSUserDefaults standardUserDefaults] setObject:freqHz forKey:kATMagnetoSampleRateHzKey];
     }
     return freqHz;
 }
@@ -97,10 +97,10 @@
                      [NSNumber numberWithDouble:100.0], kATGpsUpdateKey,
                      @"100.0 Mts", kATGpsUpdateUILKey,
                      [NSNumber numberWithDouble:kCLLocationAccuracyBest], kATGpsAccuracyKey,
-                     [NSNumber numberWithDouble:1.5], kATGpsAccuracyUISKey,
+                     [NSNumber numberWithDouble:2.0], kATGpsAccuracyUISKey,
                      @"Best", kATGpsAccuracyUILKey,
                      [NSNumber numberWithInteger:CLActivityTypeAutomotiveNavigation], kATGpsActivityKey,
-                     [NSNumber numberWithDouble:2.5], kATGpsActivityUISKey,
+                     [NSNumber numberWithDouble:2.0], kATGpsActivityUISKey,
                      [NSNumber numberWithInteger:MKMapTypeStandard], kATMapTypeConfigKey,
                      nil];
         [self saveGpsConfig:gpsConfig];

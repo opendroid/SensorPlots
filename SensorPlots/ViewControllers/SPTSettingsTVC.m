@@ -9,6 +9,7 @@
 #import "SPTSettingsTVC.h"
 #import "SPTConstants.h"
 #import "ATOUtilities.h"
+#import <Google/Analytics.h>
 @import MapKit;
 
 @interface SPTSettingsTVC ()
@@ -42,6 +43,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *gpsCoreDataCountUIL;
 @property (strong, nonatomic) NSMutableDictionary *gpsConfigurationData;
 
+@property (strong, nonatomic) id<GAITracker> gaTracker;
 
 @end
 
@@ -55,7 +57,25 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    // set up GA
+    self.gaTracker = [[GAI sharedInstance] defaultTracker];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    // Update settings UX
     [self initSettingsUX];
+    
+    // The UA-XXXXX-Y tracker ID is loaded automatically from the
+    // GoogleService-Info.plist by the `GGLContext` in the AppDelegate.
+    // If you're copying this to an app just using Analytics, you'll
+    // need to configure your tracking ID here.
+    // [START screen_view_hit_objc]
+    [self.gaTracker set:kGAIScreenName value:kATSettingsVC];
+    [self.gaTracker send:[[GAIDictionaryBuilder createScreenView] build]];
+    // [END screen_view_hit_objc]
 }
 
 - (void)didReceiveMemoryWarning {
@@ -63,9 +83,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{
-    NSLog(@"Settings:tabBarController");
-}
 
 // Retrieve data from NSUserDefaults and show values in the Setup Interface elements
 - (void) initSettingsUX {
@@ -77,7 +94,12 @@
     [self initAcceleroSettingsUI];
     BOOL backgroundMode = [ATOUtilities getAccelerometerBackgroundMode];
     [self.acceleroBackgroundUIS setOn:backgroundMode animated:NO];
-    self.acceleroCoreDataCountUIL.text = [ATOUtilities savedCountOfAcceleroDataPoints].stringValue;
+    
+    // Print saved count in nicely formatted wat
+    NSNumberFormatter *formatter = [NSNumberFormatter new];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    NSNumber *count = [ATOUtilities savedCountOfAcceleroDataPoints];
+    self.acceleroCoreDataCountUIL.text = [formatter stringFromNumber:count];
     
     // Setup Gyro
     refreshRate = [ATOUtilities getGyroConfigurationFromNSU];
@@ -87,7 +109,8 @@
     [self initGyroSettingsUI];
     backgroundMode = [ATOUtilities getGyroBackgroundMode];
     [self.gyroBackgroundUIS setOn:backgroundMode animated:NO];
-    self.gyroCoreDataCountUIL.text = [ATOUtilities savedCountOfGyroDataPoints].stringValue;
+    count = [ATOUtilities savedCountOfGyroDataPoints];
+    self.gyroCoreDataCountUIL.text = [formatter stringFromNumber:count];
     
     // Setup Magneto
     refreshRate = [ATOUtilities getMagnetoConfigurationFromNSU];
@@ -97,7 +120,8 @@
     [self initMagnetoSettingsUI];
     backgroundMode = [ATOUtilities getMagnetoBackgroundMode];
     [self.magnetoBackgroundUIS setOn:backgroundMode animated:NO];
-    self.magnetoCoreDataCountUIL.text = [ATOUtilities savedCountOfMagnetoDataPoints].stringValue;
+    count = [ATOUtilities savedCountOfMagnetoDataPoints];
+    self.magnetoCoreDataCountUIL.text = [formatter stringFromNumber:count];
     
     // Setup GPS.
     self.gpsConfigurationData = [[ATOUtilities getGpsConfigurationFromNSU] mutableCopy];
@@ -142,7 +166,7 @@
         self.acceleroRefreshRateHzUIS.thumbTintColor = customGreen;
         self.acceleroRefreshRateHzUIL.textColor = customGreen;
     }
-    [[NSUserDefaults standardUserDefaults] setObject:newRefreshRate forKey:@"SPTAccelerometerHzSetting"];
+    [[NSUserDefaults standardUserDefaults] setObject:newRefreshRate forKey:kATAcceleroSampleRateHzKey];
 }
 
 
@@ -194,7 +218,7 @@
         self.gyroRefreshRateHzUIS.thumbTintColor = customGreen;
         self.gyroRefreshRateHzUIL.textColor = customGreen;
     }
-    [[NSUserDefaults standardUserDefaults] setObject:newRefreshRate forKey:@"SPTGyroHzSetting"];
+    [[NSUserDefaults standardUserDefaults] setObject:newRefreshRate forKey:kATGyroSampleRateHzKey];
 }
 - (IBAction)gyroRefreshRateHzHandler:(UISlider *)sender {
     [self setupGyroUISlider:self.gyroRefreshRateHzUIS.value];
@@ -241,7 +265,7 @@
         self.magnetoRefreshRateHzUIS.thumbTintColor = customGreen;
         self.magnetoRefreshRateHzUIL.textColor = customGreen;
     }
-    [[NSUserDefaults standardUserDefaults] setObject:newRefreshRate forKey:@"SPTMagnetoHzSetting"];
+    [[NSUserDefaults standardUserDefaults] setObject:newRefreshRate forKey:kATMagnetoSampleRateHzKey];
 }
 - (IBAction)magnetoRefreshRateHzHandler:(UISlider *)sender {
     [self setupMagnetoUISlider:self.magnetoRefreshRateHzUIS.value];
@@ -269,13 +293,13 @@
     // 3: Setup Activity
     double activityValue = [[self.gpsConfigurationData objectForKey:kATGpsActivityUISKey] doubleValue];
     self.gpsActivityUIS.selectedSegmentIndex = activityValue;
-    if (activityValue <= 1.0) {
+    if (activityValue < 1.0) {
         self.gpsActivityUIS.selectedSegmentIndex = 0;
-    } else if (activityValue <= 2.0) {
+    } else if (activityValue < 2.0) {
         self.gpsActivityUIS.selectedSegmentIndex = 1;
-    } else if (activityValue <= 3.0) {
+    } else if (activityValue < 3.0) {
         self.gpsActivityUIS.selectedSegmentIndex = 2;
-    } else if (activityValue <= 4.0) {
+    } else if (activityValue < 4.0) {
         self.gpsActivityUIS.selectedSegmentIndex = 3;
     } else {
         self.gpsActivityUIS.selectedSegmentIndex = 4;
@@ -309,7 +333,10 @@
     self.gpsBackgroundUIS.on = isOn;
     
     // 6: Count of stored data points
-    self.gpsCoreDataCountUIL.text = [ATOUtilities savedCountOfLocationDataPoints].stringValue;
+    NSNumberFormatter *formatter = [NSNumberFormatter new];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    NSNumber *count = [ATOUtilities savedCountOfLocationDataPoints];
+    self.gpsCoreDataCountUIL.text = [formatter stringFromNumber:count];
 }
 
 - (IBAction)gpsDistanceFilterHandler:(UISlider *)sender {
@@ -370,10 +397,10 @@
         case 1:
             activityType = [NSNumber numberWithInteger:CLActivityTypeAutomotiveNavigation];
             break;
-        case 3:
+        case 2:
             activityType = [NSNumber numberWithInteger:CLActivityTypeFitness];
             break;
-        case 4:
+        case 3:
         default:
             activityType = [NSNumber numberWithInteger:CLActivityTypeOtherNavigation];
     }

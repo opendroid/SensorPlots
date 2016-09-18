@@ -32,33 +32,49 @@
 @property (atomic) BOOL updatesAreInProgress; // Maintain if test was running
 @property (atomic) BOOL  isBackgroundEnabled; // Is background mode on
 @property (atomic) NSUInteger countOfUpdates;
-@property (strong, nonatomic) MKPolyline *path;
+@property (strong, nonatomic) NSMutableArray<id<MKOverlay>> *overlays;
 @property (nonatomic) MKMapType mapType;
-
+@property (strong, nonatomic) NSArray *tripLineColors;
 @end
 
 @implementation SPTGpsVC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    
+    // Setup MOC -- managed object contect first
+    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
+    self.managedObjectContext = appDelegate.managedObjectContext;
+    
     // Setup location manager
     [self initializeLocationServices];
     self.displayBoardUIL.text = @"";
     self.countOfUpdates = 0;
-    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
-    self.managedObjectContext = appDelegate.managedObjectContext;
     
-    // Show goodies on map if available.
-    self.path = nil;
+    // Setup map infrsatructure if available.
     self.gpsUpdatesMMV.delegate = self;
-    [self updateMapConfig];
-    [self updateMap];
     NSNumber *mType = [[[NSUserDefaults standardUserDefaults] objectForKey:kATGpsConfigKey] objectForKey:kATMapTypeConfigKey];
     if (mType != nil) {
         self.mapType = mType.integerValue;
     } else {
         self.mapType = MKMapTypeStandard;
     }
+    self.gpsUpdatesMMV.showsUserLocation = TRUE;
+    self.gpsUpdatesMMV.showsScale = TRUE;
+    self.gpsUpdatesMMV.showsCompass = TRUE;
+    self.gpsUpdatesMMV.showsTraffic = TRUE;
+    self.gpsUpdatesMMV.showsBuildings = TRUE;
+    self.gpsUpdatesMMV.userTrackingMode = MKUserTrackingModeFollow;
+
+    // Update map with historic trips.
+    self.tripLineColors = @[[UIColor blueColor], [UIColor greenColor], [UIColor grayColor],
+                            [UIColor redColor], [UIColor purpleColor], [UIColor magentaColor],
+                            [UIColor darkGrayColor], [UIColor brownColor], [UIColor cyanColor]];
+    self.overlays = nil; // All overlays are stored in this array. Beware
+    [self updateMapConfig];
+    [self updateMap];
+    
     // Listen to app going to background.
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(appEnteredBackgroundMode:)
@@ -71,13 +87,15 @@
                                             forKeyPath:kATGpsConfigKey
                                                options:NSKeyValueObservingOptionNew
                                                context:NULL];
-    
     // set up GA
     self.gaTracker = [[GAI sharedInstance] defaultTracker];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    // Update config. Don't redraw map. User may be playing with zoom levels
+    [self updateMapConfig];
     
     // The UA-XXXXX-Y tracker ID is loaded automatically from the
     // GoogleService-Info.plist by the `GGLContext` in the AppDelegate.
@@ -94,28 +112,6 @@
     [[NSUserDefaults standardUserDefaults] setObject:configData forKey:kATGpsConfigKey];
 }
 
-- (NSDictionary *) getGpsConfigurationFromNSU {
-    NSDictionary *gpsConfig =  [[NSUserDefaults standardUserDefaults] objectForKey:kATGpsConfigKey];
-    if (!gpsConfig) {
-        // Set up defaults if no data is available.
-        gpsConfig = [NSDictionary dictionaryWithObjectsAndKeys:
-                     [NSNumber numberWithBool:FALSE], kATGpsIsBackgroundOnKey,
-                     [NSNumber numberWithDouble:100.0], kATGpsUpdateKey,
-                     @"100.0 Mts", kATGpsUpdateUILKey,
-                     [NSNumber numberWithDouble:kCLLocationAccuracyBest], kATGpsAccuracyKey,
-                     [NSNumber numberWithDouble:1.5], kATGpsAccuracyUISKey,
-                     @"Best", kATGpsAccuracyUILKey,
-                     [NSNumber numberWithInteger:CLActivityTypeAutomotiveNavigation], kATGpsActivityKey,
-                     [NSNumber numberWithDouble:2.5], kATGpsActivityUISKey,
-                     [NSNumber numberWithInteger:MKMapTypeStandard], kATMapTypeConfigKey,
-                     @"Auto Navigation", kATGpsActivityUILKey,
-                     nil];
-        [self saveGpsConfig:gpsConfig];
-    }
-    return gpsConfig;
-}
-
-
 - (void)receiveGpsSetupData:(NSDictionary *)configData {
     [self saveGpsConfig:configData];
     [self locationManagerUpdateConfiguration]; // Update the configuration
@@ -123,11 +119,6 @@
     
 }
 
-#pragma mark - Segue Handlers
-// Pass data to child setup controller.
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-
-}
 
 #pragma mark - Location Manager Setup
 - (void) initializeLocationServices {
@@ -148,7 +139,7 @@
 
 // Set up the configuration for the location manager
 - (void) locationManagerUpdateConfiguration {
-    NSDictionary *gpsConfig = [self getGpsConfigurationFromNSU];
+    NSDictionary *gpsConfig = [ATOUtilities getGpsConfigurationFromNSU];
     CLLocationDistance distanceFilter = [[gpsConfig objectForKey:kATGpsUpdateKey] doubleValue];
     CLActivityType activityType = [[gpsConfig objectForKey:kATGpsActivityKey] integerValue];
     CLLocationAccuracy desiredAccuracy = [[gpsConfig objectForKey:kATGpsAccuracyKey] doubleValue];
@@ -172,7 +163,7 @@
 
 #pragma mark - Location Manager UX Handlers
 - (IBAction)startStopCapturingGpsHandler:(UIBarButtonItem *)sender {
-    if (! self.updatesAreInProgress) {
+    if (! self.updatesAreInProgress) { // User pressed 'start updated'
         [self locationManagerUpdateConfiguration];
         sender.image = [UIImage imageNamed:@"hand25x25"];
         self.updatesAreInProgress = YES;
@@ -188,11 +179,9 @@
         // Send start a test notification
         [self.gaTracker send:[[GAIDictionaryBuilder createEventWithCategory:@"Test" action:@"Start" label:@"GPS" value:@1] build]];
         self.displayBoardUIL.text = @"GPS Points: 0";
-    } else {
+    } else { // User pressed 'stop updated'
         [self stopLocationUpdates];
-        
-        // Test is stopped update the map.
-        [self updateMap];
+        [self updateMap]; // Test is stopped update the map.
     }
 }
 
@@ -237,7 +226,7 @@
 - (IBAction)emailGpsDataHandler:(UIBarButtonItem *)sender {
     // Check if there is data in 'AccelerometerData' to send.
     
-    NSNumber *itemsCount = [self savedCountOfGpsDataPoints];
+    NSNumber *itemsCount = [ATOUtilities savedCountOfLocationDataPoints];
     if (itemsCount.integerValue < 1) {
         self.displayBoardUIL.text = [NSString stringWithFormat:@"No data to email"];
         return;
@@ -287,19 +276,6 @@
                 self.displayBoardUIL.text = [NSString stringWithFormat:@"Save error: %@",error.localizedDescription];
         }
 
-}
-
-- (NSNumber *) savedCountOfGpsDataPoints {
-    // Check if there is data in 'MagnetoData' to send.
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"LocationData"];
-    fetchRequest.resultType = NSCountResultType;
-    NSError *fetchError = nil;
-    NSUInteger itemsCount = [self.managedObjectContext countForFetchRequest:fetchRequest error:&fetchError];
-    if (itemsCount == NSNotFound) {
-        itemsCount = 0;
-    }
-    NSNumber *item = [NSNumber numberWithInteger:itemsCount];
-    return item;
 }
 
 #pragma mark - Mail Composers
@@ -380,22 +356,56 @@
         self.displayBoardUIL.text = [NSString stringWithFormat:@"Delete error: %@",fetchError.localizedDescription];
         return;
     }
-    if (results.count < 1) return; // Nothing to show in DB
+    if (results.count < 2) return; // Nothing to show in DB
     
-    if (self.path)
-        [self.gpsUpdatesMMV removeOverlay:self.path];
-
-    // Draw thw polyline
+    // Clean up Overlays.
+    if (self.overlays) {
+        [self.gpsUpdatesMMV removeOverlays:self.overlays];
+        [self.overlays removeAllObjects];
+    } else {
+        self.overlays = [[NSMutableArray alloc] init];
+    }
+    
     CLLocationCoordinate2D coordinates[results.count];
     MKMapPoint points[results.count]; //C array of MKMapPoint struct
-    for (int i =0; i < results.count; i++) {
+    for (int i=0; i < results.count; i++) {
         double latitude = results[i].latitude.doubleValue;
         double longitude = results[i].longitude.doubleValue;
         coordinates[i]  = CLLocationCoordinate2DMake(latitude, longitude);
         points[i] = MKMapPointForCoordinate(coordinates[i]); // For bounded rectable
     }
-    self.path = [MKPolyline polylineWithCoordinates:coordinates count:results.count];
-    [self.gpsUpdatesMMV addOverlay:self.path];
+    // Create Overlay arrays for points that are no more than a 100 meters apart
+    // That is about 22 second update at 100 mph
+    int polylineBeginIdx = 0, idx;
+    MKMapPoint pointA, pointB;
+    for (idx=1; idx < results.count; idx++) {
+        pointA = points[idx-1];
+        pointB = points[idx];
+        CLLocationDistance distance = MKMetersBetweenMapPoints(pointA,pointB);
+        if (distance > 1000) {
+            MKPolyline *path = [MKPolyline polylineWithCoordinates:coordinates+polylineBeginIdx count:idx-polylineBeginIdx];
+            path.title = [NSString stringWithFormat:@"%ld",(long)self.overlays.count+1];
+            [self.overlays addObject:path];
+            polylineBeginIdx = idx;
+        }
+    }
+    NSLog(@"Out: polylineBeginIdx:%d, idx:%d", polylineBeginIdx, idx);
+    // Add last polyline
+    if (polylineBeginIdx < idx) {
+        MKPolyline *path = [MKPolyline polylineWithCoordinates:coordinates+polylineBeginIdx count:idx-polylineBeginIdx];
+        path.title = [NSString stringWithFormat:@"%ld",(long)self.overlays.count+1];
+        [self.overlays addObject:path];
+    }
+    // If no overlays were added -- make one overlay with all points
+    if (self.overlays.count < 1) {
+        MKPolyline *path = [MKPolyline polylineWithCoordinates:coordinates count:results.count];
+        path.title = @"1";
+        [self.overlays addObject:path];
+    }
+    
+    // Add to graph
+    [self.gpsUpdatesMMV addOverlays:self.overlays];
+    NSLog(@"Added overlays:%ld", self.overlays.count);
     
     // Setup visible region for map.
     MKMapRect mapRect = [[MKPolygon polygonWithPoints:points count:results.count] boundingMapRect];
@@ -404,23 +414,20 @@
 }
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
-    MKPolylineRenderer* lineView = [[MKPolylineRenderer alloc] initWithPolyline:self.path];
-    lineView.strokeColor = [[UIColor blueColor] colorWithAlphaComponent:0.7];
-    lineView.fillColor = [[UIColor cyanColor] colorWithAlphaComponent:0.2];
-    lineView.lineWidth = 3;
-    // lineView.lineDashPattern = @[@3,@8];
-    return lineView;
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        MKPolylineRenderer* lineView = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
+        lineView.lineWidth = 5;
+        // Extract color from title
+        UIColor *color = [self.tripLineColors objectAtIndex:overlay.title.intValue%self.tripLineColors.count];
+        lineView.strokeColor = [color colorWithAlphaComponent:0.7];
+        lineView.fillColor = [color colorWithAlphaComponent:0.2];
+        return lineView;
+    }
+    return nil;
 }
 
 - (void) updateMapConfig {
-    self.gpsUpdatesMMV.showsUserLocation = TRUE;
-    self.gpsUpdatesMMV.showsScale = TRUE;
-    self.gpsUpdatesMMV.showsCompass = TRUE;
-    self.gpsUpdatesMMV.showsTraffic = TRUE;
-    self.gpsUpdatesMMV.showsBuildings = TRUE;
-    self.gpsUpdatesMMV.userTrackingMode = MKUserTrackingModeFollow;
-    
-    NSDictionary *gpsConfig = [self getGpsConfigurationFromNSU];
+    NSDictionary *gpsConfig = [ATOUtilities getGpsConfigurationFromNSU];
     MKMapType mapType = [[gpsConfig objectForKey:kATMapTypeConfigKey] integerValue];
     self.gpsUpdatesMMV.mapType = mapType;
 }
@@ -443,13 +450,22 @@
     }
 }
 
-
 #pragma mark - Handle app background event
 - (void) appEnteredBackgroundMode: (UIApplication *)application {
-    NSDictionary *gpsConfig = [self getGpsConfigurationFromNSU];
+    NSDictionary *gpsConfig = [ATOUtilities getGpsConfigurationFromNSU];
     self.isBackgroundEnabled = [[gpsConfig objectForKey:kATGpsIsBackgroundOnKey] boolValue];
     if (self.isBackgroundEnabled == NO)
         [self stopLocationUpdates];
+}
+
+#pragma mark - Segue Handlers
+// Pass data to child setup controller.
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    NSLog(@"SPTGpsVC:prepareForSegue:%@", segue.identifier);
+}
+
+- (IBAction)unwindToSPTGpsVC:(UIStoryboardSegue *)segue {
+    NSLog(@"SPTGpsVC:unwindToSPTGpsVC:%@", segue.identifier);
 }
 
 @end

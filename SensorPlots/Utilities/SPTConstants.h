@@ -25,6 +25,7 @@ FOUNDATION_EXPORT NSString *const kATAcceleroVC;
 FOUNDATION_EXPORT NSString *const kATGyroVC;
 FOUNDATION_EXPORT NSString *const kATMagnetoVC;
 FOUNDATION_EXPORT NSString *const kATGpsVC;
+FOUNDATION_EXPORT NSString *const kATSettingsVC;
 
 FOUNDATION_EXPORT NSString *const kATAcceleroTestEvent;
 FOUNDATION_EXPORT NSString *const kATGyroTestEvent;
@@ -91,20 +92,26 @@ FOUNDATION_EXPORT NSUInteger const kATyAxisTicksInIntervalMagneto;
 FOUNDATION_EXPORT NSUInteger const kATGpsMaxPointsToPlot;
 
 // Define keys to store GPS configuration items in NSU
-FOUNDATION_EXPORT NSString *const kATGpsBackgroundConfigKey;
+// Background mode settings saved in NSU
 FOUNDATION_EXPORT NSString *const kATMagnetoBackgroundConfigKey;
 FOUNDATION_EXPORT NSString *const kATGyroBackgroundConfigKey;
 FOUNDATION_EXPORT NSString *const kATAcceleroBackgroundConfigKey;
+// Sample Refresh rate saved in NSU
+FOUNDATION_EXPORT NSString *const kATMagnetoSampleRateHzKey;
+FOUNDATION_EXPORT NSString *const kATGyroSampleRateHzKey;
+FOUNDATION_EXPORT NSString *const kATAcceleroSampleRateHzKey;
+// GPS Parameters
 FOUNDATION_EXPORT NSString *const kATGpsConfigKey;
-FOUNDATION_EXPORT NSString *const kATGpsIsBackgroundOnKey;
-FOUNDATION_EXPORT NSString *const kATGpsUpdateKey;
-FOUNDATION_EXPORT NSString *const kATGpsUpdateUILKey;
-FOUNDATION_EXPORT NSString *const kATGpsAccuracyKey;
-FOUNDATION_EXPORT NSString *const kATGpsAccuracyUISKey;
-FOUNDATION_EXPORT NSString *const kATGpsAccuracyUILKey;
-FOUNDATION_EXPORT NSString *const kATGpsActivityKey;
-FOUNDATION_EXPORT NSString *const kATGpsActivityUISKey;
-FOUNDATION_EXPORT NSString *const kATGpsActivityUILKey;
+FOUNDATION_EXPORT NSString *const kATGpsUpdateKey;      // GPS distance update value
+FOUNDATION_EXPORT NSString *const kATGpsUpdateUILKey;   // GPS distance update value displayed on a Label
+FOUNDATION_EXPORT NSString *const kATGpsAccuracyKey;    // GPS Accuracy meters value
+FOUNDATION_EXPORT NSString *const kATGpsAccuracyUISKey; // GPS Accuracy meters value on the slider
+FOUNDATION_EXPORT NSString *const kATGpsAccuracyUILKey; // GPS Accuracy meters value on the UI Label
+FOUNDATION_EXPORT NSString *const kATGpsActivityKey;    // GPS Activity Key: Other, auto-nav etc
+FOUNDATION_EXPORT NSString *const kATGpsActivityUISKey; // GPS Activity Index on UIS
+FOUNDATION_EXPORT NSString *const kATGpsIsBackgroundOnKey; // GPS Backgroun mode on
+
+// Constant to change Meters per second to MPH
 FOUNDATION_EXPORT double const kATMetersPerSecToMPH;
 
 // Define keys to store Map configuration items in NSU
