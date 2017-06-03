@@ -1,8 +1,8 @@
 //
-//  LocationData.h
+//  LocationData+CoreDataClass.h
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 6/11/16.
+//  Created by Ajay Thakur on 12/25/16.
 //  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
@@ -12,8 +12,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LocationData : NSManagedObject
-
-// Insert code here to declare functionality of your managed object subclass
 
 @end
 

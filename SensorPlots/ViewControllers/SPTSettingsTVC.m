@@ -189,7 +189,7 @@
 }
 
 - (void) setupGyroUISlider: (float) value{
-    // Setup sloder color
+    // Setup slider color
     //self.acceleroRefreshRateHzUIS.value = self.refreshRateHz.intValue;
     // Setup the handler.
     if (value <= 1.0) {
@@ -450,6 +450,10 @@
 // Manage the tapping on System Setting row.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"%@, Section:%ld, Row:%ld", indexPath,(long)indexPath.section,(long)indexPath.row);
+    if (IS_OS_8_OR_LATER && [CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
+        return; // Avoid crash. If location settings is not enabled return.
+    }
+    
     if (indexPath.section == 4 && indexPath.row == 0 && IS_OS_8_OR_LATER) {
         [tableView deselectRowAtIndexPath:indexPath animated:NO];
         NSURL *settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];

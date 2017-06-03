@@ -8,7 +8,7 @@
 
 #import "ATGyroMotionManager.h"
 #import "AppDelegate.h"
-#import "GyroData.h"
+#import "GyroData+CoreDataClass.h"
 #import "ATOUtilities.h"
 #import "ATSensorData.h"
 #import "SPTConstants.h"

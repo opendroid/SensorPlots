@@ -9,7 +9,7 @@
 #import "SPTGpsVC.h"
 #import "SPTConstants.h"
 #import "AppDelegate.h"
-#import "LocationData.h"
+#import "LocationData+CoreDataClass.h"
 #import "ATOUtilities.h"
 #import <Google/Analytics.h>
 
@@ -405,7 +405,7 @@
     
     // Add to graph
     [self.gpsUpdatesMMV addOverlays:self.overlays];
-    NSLog(@"Added overlays:%ld", self.overlays.count);
+    NSLog(@"Added overlays:%ld", (unsigned long)self.overlays.count);
     
     // Setup visible region for map.
     MKMapRect mapRect = [[MKPolygon polygonWithPoints:points count:results.count] boundingMapRect];

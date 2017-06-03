@@ -109,7 +109,6 @@
 }
 
 #pragma mark - Retriving Background Mode data from CoreData
-
 + (NSNumber *) savedCountOfDataPointsForTable: (NSString *) tableName {
     // Check if there is data in 'MagnetoData' to send.
     AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
@@ -125,6 +124,7 @@
     return item;
 }
 
+#pragma mark - Retriving Count of stored data points from CoreData
 + (NSNumber *) savedCountOfGyroDataPoints {
     return [ATOUtilities savedCountOfDataPointsForTable:@"GyroData"];
 }
@@ -140,5 +140,34 @@
 + (NSNumber *) savedCountOfLocationDataPoints {
     return [ATOUtilities savedCountOfDataPointsForTable:@"LocationData"];;
 }
+
+#pragma mark - Retriving Next TestID from CoreData
++ (NSNumber *) nextTestIDForTable: (NSString *) tableName {
+    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:tableName];
+    fetchRequest.fetchLimit = 1;
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"testID" ascending:NO]];
+
+    NSError *error = nil;
+    id person = [appDelegate.managedObjectContext executeFetchRequest:fetchRequest error:&error].firstObject;
+
+    return person;
+}
++ (NSNumber *) nextTestIDForGyroUpdates {
+    return [ATOUtilities nextTestIDForTable:@"GyroSummary"];
+}
+
++ (NSNumber *) nextTestIDForMagnetoUpdates {
+    return [ATOUtilities nextTestIDForTable:@"MagnetoSummary"];
+}
++ (NSNumber *) nextTestIDForAcceleroUpdates {
+    return [ATOUtilities nextTestIDForTable:@"AccelerometerSummary"];
+}
+
++ (NSNumber *) nextTestIDForLocationDataUpdates {
+    return [ATOUtilities nextTestIDForTable:@"LocationSummary"];
+}
+
 
 @end

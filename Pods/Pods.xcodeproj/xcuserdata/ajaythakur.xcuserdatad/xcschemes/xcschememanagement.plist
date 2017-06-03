@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>GoogleToolboxForMac.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-SensorPlots.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -17,12 +22,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>7E1312E77BDD4F80C30DAE09A6E3FFF3</key>
+		<key>E1BBB76ADBF2EF4EF2CE5DF6BBC77296</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>89F756EF8A1750AC728C1B02A60CF865</key>
+		<key>F2934CEF6C1021F2850352BFF7E6B464</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FACA7EDF0F7E7CC8B670E35FC451F35C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -2,25 +2,27 @@
 //  AccelerometerData+CoreDataProperties.h
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/4/16.
+//  Created by Ajay Thakur on 12/25/16.
 //  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
-//  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
-//  to delete and recreate this implementation file for your updated model.
-//
 
-#import "AccelerometerData.h"
+#import "AccelerometerData+CoreDataClass.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AccelerometerData (CoreDataProperties)
 
-@property (nullable, nonatomic, retain) NSNumber *avgValue;
-@property (nullable, nonatomic, retain) NSNumber *timeInterval;
-@property (nullable, nonatomic, retain) NSDate *timestamp;
-@property (nullable, nonatomic, retain) NSNumber *x;
-@property (nullable, nonatomic, retain) NSNumber *y;
-@property (nullable, nonatomic, retain) NSNumber *z;
++ (NSFetchRequest<AccelerometerData *> *)fetchRequest;
+
+@property (nullable, nonatomic, copy) NSNumber *avgValue;
+@property (nullable, nonatomic, copy) NSNumber *sampleID;
+@property (nullable, nonatomic, copy) NSNumber *testID;
+@property (nullable, nonatomic, copy) NSNumber *timeInterval;
+@property (nullable, nonatomic, copy) NSDate *timestamp;
+@property (nullable, nonatomic, copy) NSNumber *x;
+@property (nullable, nonatomic, copy) NSNumber *y;
+@property (nullable, nonatomic, copy) NSNumber *z;
 
 @end
 

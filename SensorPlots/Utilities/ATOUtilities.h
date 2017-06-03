@@ -29,4 +29,9 @@
 + (NSNumber *) savedCountOfAcceleroDataPoints;
 + (NSNumber *) savedCountOfLocationDataPoints;
 
++ (NSNumber *) nextTestIDForGyroUpdates;
++ (NSNumber *) nextTestIDForMagnetoUpdates;
++ (NSNumber *) nextTestIDForAcceleroUpdates;
++ (NSNumber *) nextTestIDForLocationDataUpdates;
+
 @end

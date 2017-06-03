@@ -225,6 +225,10 @@
 
 }
 
+- (IBAction)unwindToSPTGyroVC:(UIStoryboardSegue *)segue {
+    NSLog(@"SPTGyroVC:unwindToSPTGyroVC:%@", segue.identifier);
+}
+
 #pragma mark - Gyro Graph View Area
 
 - (void) setupGyroGraph {
@@ -292,6 +296,18 @@
     self.isBackgroundEnabled = [self.motionManager getGyroBackgroundMode];
     if (self.isBackgroundEnabled == NO)
         [self.motionManager stopGyroUpdates];
+}
+
+#pragma mark - Popover delegates
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    // Ensure size to Popover as in storyboard.
+    return UIModalPresentationNone;
+}
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection {
+    // Need this to work on iPhone 6S. Stack overflow discussion:
+    // http://stackoverflow.com/questions/31275151/why-isnt-preferredcontentsize-used-by-iphone-6-plus-landscape
+    return UIModalPresentationNone;
 }
 
 @end

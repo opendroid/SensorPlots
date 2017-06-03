@@ -242,6 +242,10 @@
 }
 
 
+- (IBAction)unwindToSPTAccelerometerVC:(UIStoryboardSegue *)segue {
+    NSLog(@"SPTAccelerometerVC:unwindToSPTAccelerometerVC:%@", segue.identifier);
+}
+
 - (IBAction) accelerometerRecordData:(UIStoryboardSegue *)segue {
     NSLog(@"Returning from: %@ -- start recording", segue.identifier);
     // Accessed if start recording was pressed.
@@ -256,7 +260,6 @@
 - (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection {
     // Need this to work on iPhone 6S. Stack overflow discussion:
     // http://stackoverflow.com/questions/31275151/why-isnt-preferredcontentsize-used-by-iphone-6-plus-landscape
-    
     return UIModalPresentationNone;
 }
 

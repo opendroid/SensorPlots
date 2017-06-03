@@ -2,22 +2,25 @@
 //  MagnetoData+CoreDataProperties.m
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/4/16.
+//  Created by Ajay Thakur on 12/25/16.
 //  Copyright © 2016 Ajay Thakur. All rights reserved.
-//
-//  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
-//  to delete and recreate this implementation file for your updated model.
 //
 
 #import "MagnetoData+CoreDataProperties.h"
 
 @implementation MagnetoData (CoreDataProperties)
 
++ (NSFetchRequest<MagnetoData *> *)fetchRequest {
+	return [[NSFetchRequest alloc] initWithEntityName:@"MagnetoData"];
+}
+
+@dynamic avgValue;
+@dynamic sampleID;
+@dynamic testID;
+@dynamic timeInterval;
+@dynamic timestamp;
 @dynamic x;
 @dynamic y;
 @dynamic z;
-@dynamic timeInterval;
-@dynamic timestamp;
-@dynamic avgValue;
 
 @end

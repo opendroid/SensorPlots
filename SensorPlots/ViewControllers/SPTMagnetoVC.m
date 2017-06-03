@@ -215,6 +215,10 @@
 
 }
 
+- (IBAction)unwindToSPTMagnetoVC:(UIStoryboardSegue *)segue {
+    NSLog(@"SPTMagnetoVC:unwindToSPTMagnetoVC:%@", segue.identifier);
+}
+
 #pragma mark - Magneto Graph View Area
 
 - (void) setupMagnetoGraph {
@@ -280,6 +284,18 @@
     self.isBackgroundEnabled = [self.motionManager getMagnetoBackgroundMode];
     if (self.isBackgroundEnabled == NO)
         [self.motionManager stopMagnetoUpdates];
+}
+
+#pragma mark - Popover delegates
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+    // Ensure size to Popover as in storyboard.
+    return UIModalPresentationNone;
+}
+
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection {
+    // Need this to work on iPhone 6S. Stack overflow discussion:
+    // http://stackoverflow.com/questions/31275151/why-isnt-preferredcontentsize-used-by-iphone-6-plus-landscape
+    return UIModalPresentationNone;
 }
 
 @end

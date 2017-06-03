@@ -2,24 +2,27 @@
 //  LocationData+CoreDataProperties.m
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 6/11/16.
+//  Created by Ajay Thakur on 12/25/16.
 //  Copyright © 2016 Ajay Thakur. All rights reserved.
-//
-//  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
-//  to delete and recreate this implementation file for your updated model.
 //
 
 #import "LocationData+CoreDataProperties.h"
 
 @implementation LocationData (CoreDataProperties)
 
-@dynamic latitude;
-@dynamic longitude;
++ (NSFetchRequest<LocationData *> *)fetchRequest {
+	return [[NSFetchRequest alloc] initWithEntityName:@"LocationData"];
+}
+
 @dynamic altitude;
-@dynamic verticalAccuracy;
-@dynamic horizontalAccuracy;
 @dynamic course;
+@dynamic horizontalAccuracy;
+@dynamic latitude;
+@dynamic locationID;
+@dynamic longitude;
 @dynamic speed;
 @dynamic timestamp;
+@dynamic tripID;
+@dynamic verticalAccuracy;
 
 @end

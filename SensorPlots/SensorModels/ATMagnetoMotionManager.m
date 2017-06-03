@@ -8,7 +8,7 @@
 
 #import "ATMagnetoMotionManager.h"
 #import "AppDelegate.h"
-#import "MagnetoData.h"
+#import "MagnetoData+CoreDataClass.h"
 #import "ATOUtilities.h"
 #import "ATSensorData.h"
 #import "SPTConstants.h"

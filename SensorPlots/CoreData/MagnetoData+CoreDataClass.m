@@ -1,15 +1,14 @@
 //
-//  GyroData.m
+//  MagnetoData+CoreDataClass.m
 //  SensorPlots
 //
-//  Created by Ajay Thakur on 2/4/16.
+//  Created by Ajay Thakur on 12/25/16.
 //  Copyright © 2016 Ajay Thakur. All rights reserved.
 //
 
-#import "GyroData.h"
+#import "MagnetoData+CoreDataClass.h"
 
-@implementation GyroData
-
+@implementation MagnetoData
 // Insert code here to add functionality to your managed object subclass
 + (NSSet *) keyPathsForValuesAffectingAvgValue {
     return [NSSet setWithObjects:@"x", @"y", @"z", nil];
@@ -29,5 +28,4 @@
     NSDate *sampleTime = [NSDate dateWithTimeIntervalSinceNow:sampleTimeInPast];
     return sampleTime;
 }
-
 @end

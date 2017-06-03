@@ -8,7 +8,7 @@
 
 #import "ATAccelerometerMotionManager.h"
 #import "AppDelegate.h"
-#import "AccelerometerData.h"
+#import "AccelerometerData+CoreDataClass.h"
 #import "ATOUtilities.h"
 #import "ATSensorData.h"
 #import "SPTConstants.h"
@@ -24,7 +24,8 @@
 @property (atomic) BOOL accelerometerStartedByUser;
 @property (atomic) __block BOOL accelerometerStoppedByUser; // Checked in block.
 @property (atomic) UInt32 realTimeCountOfAcclerometerDataPoints;
-
+@property (atomic) UInt64 acceleroTestID; // Save the Test ID for this test
+@property (atomic) UInt64 acceleroTestSampleID; // Save the Sample ID
 @end
 
 @implementation ATAccelerometerMotionManager
@@ -126,6 +127,7 @@
     // Fetch the values and save them
     self.realTimeCountOfAcclerometerDataPoints = 0;
     self.incomingDataArray = [[NSMutableArray alloc] init];
+    self.acceleroTestSampleID = 0;
     self.accelerometerStartedByUser = YES;
     
     NSOperationQueue *opsQueue = [[NSOperationQueue alloc] init];
@@ -335,10 +337,13 @@
     [self.managedObjectContext performBlock:^{
         for (ATSensorData *d in incomingArray) {
             AccelerometerData *data = [NSEntityDescription insertNewObjectForEntityForName:@"AccelerometerData" inManagedObjectContext:self.managedObjectContext];
+            self.acceleroTestSampleID++;
             data.x = [NSNumber numberWithDouble:d.x];
             data.y = [NSNumber numberWithDouble:d.y];
             data.z = [NSNumber numberWithDouble:d.z];
             data.timeInterval = [NSNumber numberWithDouble:d.timestamp]; // Time since last phone bootup.
+            data.sampleID = [NSNumber numberWithLongLong:self.acceleroTestSampleID];
+            data.testID = [NSNumber numberWithLongLong:self.acceleroTestID];
         }
         __block NSError *error;
         BOOL isSaved = [self.managedObjectContext save:&error];
