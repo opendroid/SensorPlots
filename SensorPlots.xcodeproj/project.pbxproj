@@ -78,7 +78,7 @@
 		745A636E1D0DC2A8002CBCAD /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		746C56341C625337005984E2 /* ATAccelerometerMotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATAccelerometerMotionManager.h; path = SensorModels/ATAccelerometerMotionManager.h; sourceTree = "<group>"; };
 		746C56351C625337005984E2 /* ATAccelerometerMotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATAccelerometerMotionManager.m; path = SensorModels/ATAccelerometerMotionManager.m; sourceTree = "<group>"; };
-		746C56371C625722005984E2 /* ATSMotionAccelerometerManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATSMotionAccelerometerManagerDelegate.h; sourceTree = "<group>"; };
+		746C56371C625722005984E2 /* ATMotionAccelerometerManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATMotionAccelerometerManagerDelegate.h; sourceTree = "<group>"; };
 		746DD2FC1C63CD8700200320 /* ATGyroMotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATGyroMotionManager.h; path = SensorModels/ATGyroMotionManager.h; sourceTree = "<group>"; };
 		746DD2FD1C63CD8700200320 /* ATGyroMotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATGyroMotionManager.m; path = SensorModels/ATGyroMotionManager.m; sourceTree = "<group>"; };
 		746DD3001C63DCEA00200320 /* ATGyroMotionManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATGyroMotionManagerDelegate.h; path = SensorModels/ATGyroMotionManagerDelegate.h; sourceTree = "<group>"; };
@@ -267,7 +267,7 @@
 		746C56331C62529F005984E2 /* SensorModels */ = {
 			isa = PBXGroup;
 			children = (
-				746C56371C625722005984E2 /* ATSMotionAccelerometerManagerDelegate.h */,
+				746C56371C625722005984E2 /* ATMotionAccelerometerManagerDelegate.h */,
 				746DD3001C63DCEA00200320 /* ATGyroMotionManagerDelegate.h */,
 				746DD3101C63E5D400200320 /* ATMagnetoMotionManagerDelegate.h */,
 				746C56341C625337005984E2 /* ATAccelerometerMotionManager.h */,
@@ -587,10 +587,19 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"\"${PODS_ROOT}/FirebaseAnalytics/Frameworks\"/**",
+					"\"${PODS_ROOT}/FirebaseCore/Frameworks\"/**",
+					"\"${PODS_ROOT}/FirebaseInstanceID/Frameworks\"/**",
+					"\"${PODS_ROOT}/Google/Frameworks\"/**",
+				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
+					"$(inherited)/**",
+					"\"${PODS_ROOT}/Headers/Public\"/**",
 					"\"${PODS_ROOT}/Headers/Public/CorePlot\"/**",
+					"\"${PODS_ROOT}/FirebaseCore/Frameworks\"/**",
+					"\"${PODS_ROOT}/FirebaseAnalytics/Frameworks\"/**",
 				);
 				INFOPLIST_FILE = SensorPlots/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
@@ -608,9 +617,16 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Ajay Thakur (NA55VSYBX6)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)/**",
+					"\"${PODS_ROOT}/FirebaseAnalytics/Frameworks\"/**",
+					"\"${PODS_ROOT}/FirebaseCore/Frameworks\"/**",
+					"\"${PODS_ROOT}/FirebaseInstanceID/Frameworks\"/**",
+					"\"${PODS_ROOT}/Google/Frameworks\"/**",
+				);
 				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${PODS_ROOT}/Headers/Public\"",
+					"$(inherited)/**",
+					"\"${PODS_ROOT}/Headers/Public\"/**",
 					"\"${PODS_ROOT}/Headers/Public/CorePlot\"/**",
 				);
 				INFOPLIST_FILE = SensorPlots/Info.plist;

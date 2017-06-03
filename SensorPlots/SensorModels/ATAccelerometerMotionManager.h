@@ -8,7 +8,7 @@
 
 #import <CoreMotion/CoreMotion.h>
 #import <MessageUI/MessageUI.h>
-#import "ATSMotionAccelerometerManagerDelegate.h"
+#import "ATMotionAccelerometerManagerDelegate.h"
 
 @interface ATAccelerometerMotionManager : CMMotionManager
 
